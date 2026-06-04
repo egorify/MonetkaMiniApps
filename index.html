@@ -52,8 +52,8 @@
   --fs:'Manrope',-apple-system,BlinkMacSystemFont,'SF Pro Text',system-ui,sans-serif;
   --fm:'IBM Plex Mono','SF Mono',ui-monospace,monospace;
 }
-html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-family:var(--fs);font-weight:500;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
-body{position:fixed;top:0;left:0;right:0;bottom:0;transition:background-color 0.6s ease;}
+html{height:100%;}
+body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-family:var(--fs);font-weight:500;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;position:fixed;top:0;left:0;right:0;bottom:0;transition:background-color 0.6s ease;}
 
 /* ============ BACKGROUND ============ */
 .bg-glow{position:fixed;top:0;left:0;right:0;bottom:0;z-index:0;pointer-events:none;background:
@@ -908,12 +908,14 @@ function __init(){
   if(__inited)return;__inited=true;
   initTelegram();
 
-  // Lock app height so iOS keyboard doesn't shrink the layout and shift the coin
-  var _lockedH=window.innerHeight,_lockedW=window.innerWidth;
-  function _applyLockedH(){var h=_lockedH+'px';document.body.style.height=h;var a=document.getElementById('app');if(a)a.style.height=h;}
-  _applyLockedH();
-  window.addEventListener('resize',function(){if(window.innerWidth!==_lockedW){_lockedH=window.innerHeight;_lockedW=window.innerWidth;_applyLockedH();}});
-  if(window.visualViewport){window.visualViewport.addEventListener('resize',function(){if(Math.round(window.visualViewport.width)!==_lockedW){_lockedH=Math.round(window.visualViewport.height);_lockedW=Math.round(window.visualViewport.width);_applyLockedH();}});}
+  // iOS: when keyboard opens viewport shrinks — offset the app upward to compensate
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize',function(){
+      var offset=window.innerHeight-window.visualViewport.height;
+      var a=document.getElementById('app');
+      if(a)a.style.transform=offset>50?'translateY(-'+offset+'px)':'';
+    });
+  }
 
   var sbtn=document.getElementById('sound-btn');if(sbtn){sbtn.textContent=soundOn?'🔊':'🔇';sbtn.style.color=soundOn?'':'var(--tx-3)';}
   slider=document.getElementById('slider');
