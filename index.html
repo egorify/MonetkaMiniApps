@@ -91,7 +91,7 @@ body.bg-palace .bg-glow{background:radial-gradient(120% 60% at 50% -8%,rgba(246,
 /* ============ APP / SLIDER ============ */
 #app{position:fixed;top:0;left:0;right:0;bottom:0;z-index:1;overflow:hidden;touch-action:none;}
 .slider-track{display:flex;width:400%;height:100%;will-change:transform;-webkit-transform:translateZ(0);transform:translateZ(0);
-  transition:-webkit-transform 0.95s cubic-bezier(0.16,1,0.3,1);transition:transform 0.95s cubic-bezier(0.16,1,0.3,1);}
+  transition:-webkit-transform 0.44s cubic-bezier(0.32,0.72,0,1);transition:transform 0.44s cubic-bezier(0.32,0.72,0,1);}
 .slider-track.dragging{transition:none;}
 .panel{width:25%;height:100%;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;
   padding:calc(env(safe-area-inset-top,0px) + 88px) 22px calc(env(safe-area-inset-bottom,0px) + 34px);}
@@ -103,8 +103,8 @@ body.bg-palace .bg-glow{background:radial-gradient(120% 60% at 50% -8%,rgba(246,
 
 /* ============ NAV DOTS ============ */
 .nav{position:fixed;top:calc(env(safe-area-inset-top,0px) + 54px);left:0;right:0;z-index:30;display:flex;justify-content:center;align-items:center;gap:8px;pointer-events:none;}
-.dot{width:6px;height:6px;border-radius:50%;background:var(--tx-4);transition:all 0.4s cubic-bezier(0.22,1,0.36,1);}
-.dot.active{width:22px;border-radius:3px;background:var(--gold);}
+.dot{width:6px;height:6px;border-radius:3px;background:var(--tx-4);transition:all 0.38s cubic-bezier(0.32,0.72,0,1);}
+.dot.active{width:22px;background:var(--gold);}
 
 /* ============ TYPE HELPERS ============ */
 .eyebrow{font-size:10px;font-weight:700;letter-spacing:2.4px;text-transform:uppercase;color:var(--tx-3);}
@@ -721,15 +721,19 @@ function applyBg(){
 var curPanel=1;
 var slider=null;
 var touchStartX=0,touchStartY=0,isDragging=false,startOffset=0;
+var _lastTouchX=0,_lastTouchTime=0,_velocity=0;
 var mouseDown=false,mouseStartX=0;
 function getOffset(p){return-(p*(100/4));}
+function _haptic(type){try{if(window.Telegram&&Telegram.WebApp&&Telegram.WebApp.HapticFeedback)Telegram.WebApp.HapticFeedback.impactOccurred(type||'light');}catch(e){}}
 function snapTo(p,animate){
   if(animate===undefined)animate=true;
+  var prev=curPanel;
   p=Math.max(0,Math.min(3,p));curPanel=p;
   if(!slider)return;
-  if(animate)slider.classList.remove('dragging');else slider.classList.add('dragging');
+  if(animate){slider.classList.remove('dragging');}else{slider.classList.add('dragging');}
   slider.style.transform='translateX('+getOffset(p)+'%)';
   updateDots();
+  if(animate&&p!==prev)_haptic('light');
   if(p===0)renderShop();
   if(p===3)renderLB();
 }
@@ -957,9 +961,33 @@ function __init(){
   slider=document.getElementById('slider');
   var app=document.getElementById('app');
   if(app){
-    app.addEventListener('touchstart',function(e){touchStartX=e.touches[0].clientX;touchStartY=e.touches[0].clientY;startOffset=curPanel*window.innerWidth;isDragging=false;},{passive:true});
-    app.addEventListener('touchmove',function(e){var dx=e.touches[0].clientX-touchStartX;var dy=e.touches[0].clientY-touchStartY;if(!isDragging&&Math.abs(dy)>Math.abs(dx))return;isDragging=true;e.preventDefault();var pct=((-startOffset+dx)/(window.innerWidth*3))*100;if(slider){slider.classList.add('dragging');slider.style.transform='translateX('+pct+'%)';}},{passive:false});
-    app.addEventListener('touchend',function(e){if(!isDragging)return;var dx=e.changedTouches[0].clientX-touchStartX;var thr=window.innerWidth*0.18;var t=curPanel;if(dx<-thr)t=Math.min(3,curPanel+1);else if(dx>thr)t=Math.max(0,curPanel-1);snapTo(t,true);isDragging=false;});
+    app.addEventListener('touchstart',function(e){
+      touchStartX=e.touches[0].clientX;touchStartY=e.touches[0].clientY;
+      startOffset=curPanel*window.innerWidth;isDragging=false;
+      _lastTouchX=touchStartX;_lastTouchTime=Date.now();_velocity=0;
+    },{passive:true});
+    app.addEventListener('touchmove',function(e){
+      var dx=e.touches[0].clientX-touchStartX;
+      var dy=e.touches[0].clientY-touchStartY;
+      if(!isDragging&&Math.abs(dy)>Math.abs(dx))return;
+      isDragging=true;e.preventDefault();
+      var now=Date.now();var dt=now-_lastTouchTime;
+      if(dt>0)_velocity=(e.touches[0].clientX-_lastTouchX)/dt;
+      _lastTouchX=e.touches[0].clientX;_lastTouchTime=now;
+      var rdx=dx;
+      if((curPanel===0&&dx>0)||(curPanel===3&&dx<0))rdx=dx*0.25;
+      var pct=((-startOffset+rdx)/(window.innerWidth*3))*100;
+      if(slider){slider.classList.add('dragging');slider.style.transform='translateX('+pct+'%)';}
+    },{passive:false});
+    app.addEventListener('touchend',function(e){
+      if(!isDragging)return;
+      var dx=e.changedTouches[0].clientX-touchStartX;
+      var thr=window.innerWidth*0.15;var velThr=0.38;
+      var t=curPanel;
+      if(_velocity<-velThr||dx<-thr)t=Math.min(3,curPanel+1);
+      else if(_velocity>velThr||dx>thr)t=Math.max(0,curPanel-1);
+      snapTo(t,true);isDragging=false;_velocity=0;
+    });
     app.addEventListener('mousedown',function(e){mouseDown=true;mouseStartX=e.clientX;startOffset=curPanel*window.innerWidth;});
   }
   window.addEventListener('mousemove',function(e){if(!mouseDown)return;var dx=e.clientX-mouseStartX;var pct=((-startOffset+dx)/(window.innerWidth*3))*100;if(slider){slider.classList.add('dragging');slider.style.transform='translateX('+pct+'%)';}});
