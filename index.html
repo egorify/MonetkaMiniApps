@@ -130,7 +130,7 @@ body.bg-palace .bg-glow{background:radial-gradient(120% 60% at 50% -8%,rgba(246,
 .stat-lbl{font-size:9px;font-weight:600;letter-spacing:1.4px;text-transform:uppercase;color:var(--tx-3);margin-top:3px;}
 
 /* coin — HERO */
-.coin-stage{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:0;}
+.coin-stage{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 0 0;}
 .coin-wrap{position:relative;width:clamp(150px,30vh,200px);height:clamp(150px,30vh,200px);display:flex;align-items:center;justify-content:center;-webkit-filter:drop-shadow(0 16px 28px rgba(0,0,0,0.55));filter:drop-shadow(0 16px 28px rgba(0,0,0,0.55));}
 .coin-halo{position:absolute;width:132%;height:132%;border-radius:50%;background:radial-gradient(circle,var(--gold-soft) 0%,transparent 60%);opacity:0.8;transition:opacity 0.4s ease,transform 0.4s ease;}
 .coin-wrap.win-pulse .coin-halo{animation:halo 0.9s ease-out;}
@@ -166,10 +166,10 @@ body.bg-palace .bg-glow{background:radial-gradient(120% 60% at 50% -8%,rgba(246,
 .chip:active{transform:scale(0.94);background:var(--panel-2);color:var(--tx);}
 
 /* choice */
-.choice{display:flex;gap:10px;margin-top:12px;flex:none;}
-.choice-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:10px;height:52px;border-radius:14px;border:1.5px solid var(--line-2);background:var(--panel);color:var(--tx-2);transition:all 0.2s cubic-bezier(0.22,1,0.36,1);}
-.choice-btn .cmini{width:30px;height:30px;flex:none;opacity:0.7;transition:opacity 0.2s ease;}
-.choice-btn .clabel{font-size:15px;font-weight:800;letter-spacing:0.4px;}
+.choice{display:flex;gap:10px;margin-top:8px;flex:none;}
+.choice-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:12px;height:68px;border-radius:18px;border:1.5px solid var(--line-2);background:var(--panel);color:var(--tx-2);transition:all 0.2s cubic-bezier(0.22,1,0.36,1);}
+.choice-btn .cmini{width:38px;height:38px;flex:none;opacity:0.7;transition:opacity 0.2s ease;}
+.choice-btn .clabel{font-size:18px;font-weight:800;letter-spacing:0.3px;}
 .choice-btn:active{transform:scale(0.97);}
 .choice-btn.active{border-color:var(--gold-line);background:var(--gold-soft);color:var(--tx);box-shadow:inset 0 0 0 1px var(--gold-line);}
 .choice-btn.active .cmini{opacity:1;}
