@@ -15,6 +15,12 @@
   });
   // Also patch getBoundingClientRect to never return undefined on iOS
   Element.prototype.getBoundingClientRect = function(){
+    if(!this || typeof this.nodeType === 'undefined'){
+      var err = new Error('getBoundingClientRect called on non-element: ' + this);
+      var d=document.getElementById('__err');if(!d){d=document.createElement('div');d.id='__err';d.style.cssText='position:fixed;top:0;left:0;right:0;z-index:99999;background:#b00020;color:#fff;font:12px/1.4 monospace;padding:12px;white-space:pre-wrap;word-break:break-word;max-height:55%;overflow:auto';(document.body||document.documentElement).appendChild(d);}
+      d.textContent += 'CRASH PREVENTED: ' + err.message + '\n' + (err.stack||'') + '\n\n';
+      return {top:0,left:0,bottom:0,right:0,width:0,height:0,x:0,y:0,toJSON:function(){}};
+    }
     var rect = origGetBoundingClientRect.call(this);
     if(!rect){
       return {top:0,left:0,bottom:0,right:0,width:0,height:0,x:0,y:0,toJSON:function(){}};
