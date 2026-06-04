@@ -5,39 +5,45 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
 <title>Монетка</title>
 <script>
-// iOS Safari polyfill: SVG elements and telegram-web-app.js may lack getBoundingClientRect
+// iOS Safari polyfill: intercept getBoundingClientRect crashes
 (function(){
-  var origGetBoundingClientRect = Element.prototype.getBoundingClientRect;
-  // Debug: log if getBoundingClientRect exists
-  var d0=document.getElementById('__err');if(!d0){d0=document.createElement('div');d0.id='__err';d0.style.cssText='position:fixed;top:0;left:0;right:0;z-index:99999;background:#b00020;color:#fff;font:12px/1.4 monospace;padding:12px;white-space:pre-wrap;word-break:break-word;max-height:55%;overflow:auto';(document.body||document.documentElement).appendChild(d0);}
-  d0.textContent += 'DEBUG: Element.prototype.getBoundingClientRect = ' + typeof origGetBoundingClientRect + '\n';
-  d0.textContent += 'DEBUG: typeof SVGElement = ' + typeof SVGElement + '\n';
-  if(typeof SVGElement !== 'undefined') d0.textContent += 'DEBUG: SVGElement.prototype.getBoundingClientRect = ' + typeof SVGElement.prototype.getBoundingClientRect + '\n';
-  // Fix typo in telegram-web-app.js
+  var origGCR = Element.prototype.getBoundingClientRect;
   Object.defineProperty(Element.prototype, 'getBoundingclientRect', {
-    value: function() { return origGetBoundingClientRect.call(this); },
+    value: function() { return origGCR.call(this); },
     writable: true, configurable: true
   });
-  // Patch getBoundingClientRect to handle non-elements and SVG elements on iOS
   Element.prototype.getBoundingClientRect = function(){
     if(!this || typeof this.nodeType === 'undefined'){
-      var err = new Error('getBoundingClientRect called on non-element: ' + this);
-      var d=document.getElementById('__err');if(!d){d=document.createElement('div');d.id='__err';d.style.cssText='position:fixed;top:0;left:0;right:0;z-index:99999;background:#b00020;color:#fff;font:12px/1.4 monospace;padding:12px;white-space:pre-wrap;word-break:break-word;max-height:55%;overflow:auto';(document.body||document.documentElement).appendChild(d);}
-      d.textContent += 'CRASH PREVENTED: ' + err.message + '\n' + (err.stack||'') + '\n\n';
       return {top:0,left:0,bottom:0,right:0,width:0,height:0,x:0,y:0,toJSON:function(){}};
     }
-    var rect = origGetBoundingClientRect.call(this);
+    var rect = origGCR.call(this);
     if(!rect){
       return {top:0,left:0,bottom:0,right:0,width:0,height:0,x:0,y:0,toJSON:function(){}};
     }
     return rect;
   };
-  // Also patch SVGElement specifically for iOS WebKit
   if(typeof SVGElement !== 'undefined' && SVGElement.prototype && !SVGElement.prototype.getBoundingClientRect){
     SVGElement.prototype.getBoundingClientRect = function(){
       return Element.prototype.getBoundingClientRect.call(this);
     };
   }
+  // Global error interceptor - log the actual el that crashes
+  var origOnerror = window.onerror;
+  window.onerror = function(msg, src, line, col, err){
+    if(msg && msg.indexOf('getBoundingClientRect') >= 0){
+      var d = document.getElementById('__err');
+      if(!d){
+        d = document.createElement('div');
+        d.id = '__err';
+        d.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;background:#b00020;color:#fff;font:12px/1.4 monospace;padding:12px;white-space:pre-wrap;word-break:break-word;max-height:55%;overflow:auto';
+        (document.body || document.documentElement).appendChild(d);
+      }
+      d.textContent += 'INTERCEPTED: ' + msg + '\nline:' + line + ' col:' + col + '\nstack:' + (err && err.stack ? err.stack : 'none') + '\n\n';
+      return true; // suppress the error
+    }
+    if(origOnerror) return origOnerror.apply(this, arguments);
+    return false;
+  };
 })();
 </script>
 <script>
@@ -153,12 +159,11 @@ body.bg-palace .bg-glow{background:radial-gradient(120% 60% at 50% -8%,rgba(246,
 
 /* coin — HERO */
 .coin-stage{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:0;}
-.coin-wrap{position:relative;width:clamp(150px,30vh,200px);height:clamp(150px,30vh,200px);display:flex;align-items:center;justify-content:center;animation:float 5s ease-in-out infinite;-webkit-filter:drop-shadow(0 16px 28px rgba(0,0,0,0.55));filter:drop-shadow(0 16px 28px rgba(0,0,0,0.55));}
-@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+.coin-wrap{position:relative;width:clamp(150px,30vh,200px);height:clamp(150px,30vh,200px);display:flex;align-items:center;justify-content:center;-webkit-filter:drop-shadow(0 16px 28px rgba(0,0,0,0.55));filter:drop-shadow(0 16px 28px rgba(0,0,0,0.55));}
 .coin-halo{position:absolute;width:132%;height:132%;border-radius:50%;background:radial-gradient(circle,var(--gold-soft) 0%,transparent 60%);opacity:0.8;transition:opacity 0.4s ease,transform 0.4s ease;}
 .coin-wrap.win-pulse .coin-halo{animation:halo 0.9s ease-out;}
 @keyframes halo{0%{opacity:0.8;transform:scale(1);}40%{opacity:1;transform:scale(1.22);}100%{opacity:0.8;transform:scale(1);}}
-.coin{position:relative;width:90%;height:90%;transform-style:preserve-3d;-webkit-transform-style:preserve-3d;will-change:transform;}
+.coin{position:relative;width:90%;height:90%;transform-style:preserve-3d;-webkit-transform-style:preserve-3d;}
 .coin-face{position:absolute;top:0;left:0;width:100%;height:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;align-items:center;justify-content:center;}
 .coin-face svg{width:100%;height:100%;display:block;}
 .coin-back{transform:rotateY(180deg);-webkit-transform:rotateY(180deg);}
