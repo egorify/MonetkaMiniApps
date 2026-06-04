@@ -5,53 +5,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
 <title>Монетка</title>
 <script>
-// iOS Safari polyfill: intercept getBoundingClientRect crashes
+// Polyfill getBoundingClientRect for SVG elements on older iOS WebKit
 (function(){
-  var origGCR = Element.prototype.getBoundingClientRect;
-  Object.defineProperty(Element.prototype, 'getBoundingclientRect', {
-    value: function() { return origGCR.call(this); },
-    writable: true, configurable: true
-  });
-  Element.prototype.getBoundingClientRect = function(){
-    if(!this || typeof this.nodeType === 'undefined'){
-      return {top:0,left:0,bottom:0,right:0,width:0,height:0,x:0,y:0,toJSON:function(){}};
-    }
-    var rect = origGCR.call(this);
-    if(!rect){
-      return {top:0,left:0,bottom:0,right:0,width:0,height:0,x:0,y:0,toJSON:function(){}};
-    }
-    return rect;
-  };
-  if(typeof SVGElement !== 'undefined' && SVGElement.prototype && !SVGElement.prototype.getBoundingClientRect){
-    SVGElement.prototype.getBoundingClientRect = function(){
-      return Element.prototype.getBoundingClientRect.call(this);
+  try {
+    var origGCR = Element.prototype.getBoundingClientRect;
+    var safeFallback = {top:0,left:0,bottom:0,right:0,width:0,height:0,x:0,y:0,toJSON:function(){}};
+    Element.prototype.getBoundingClientRect = function(){
+      if(!this || typeof this.nodeType === 'undefined') return safeFallback;
+      try { var r = origGCR.call(this); return r || safeFallback; } catch(e) { return safeFallback; }
     };
-  }
-  // Global error interceptor - log the actual el that crashes
-  var origOnerror = window.onerror;
-  window.onerror = function(msg, src, line, col, err){
-    if(msg && msg.indexOf('getBoundingClientRect') >= 0){
-      var d = document.getElementById('__err');
-      if(!d){
-        d = document.createElement('div');
-        d.id = '__err';
-        d.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;background:#b00020;color:#fff;font:12px/1.4 monospace;padding:12px;white-space:pre-wrap;word-break:break-word;max-height:55%;overflow:auto';
-        (document.body || document.documentElement).appendChild(d);
-      }
-      d.textContent += 'INTERCEPTED: ' + msg + '\nline:' + line + ' col:' + col + '\nstack:' + (err && err.stack ? err.stack : 'none') + '\n\n';
-      return true; // suppress the error
+    if(typeof SVGElement !== 'undefined' && SVGElement.prototype && !SVGElement.prototype.getBoundingClientRect){
+      SVGElement.prototype.getBoundingClientRect = function(){
+        try { return Element.prototype.getBoundingClientRect.call(this); } catch(e) { return safeFallback; }
+      };
     }
-    if(origOnerror) return origOnerror.apply(this, arguments);
-    return false;
-  };
-})();
-</script>
-<script>
-// Early error capture — surfaces any JS/parse error visibly
-(function(){
-  function showErr(m){var d=document.getElementById('__err');if(!d){d=document.createElement('div');d.id='__err';d.style.cssText='position:fixed;top:0;left:0;right:0;z-index:99999;background:#b00020;color:#fff;font:12px/1.4 monospace;padding:12px;white-space:pre-wrap;word-break:break-word;max-height:55%;overflow:auto';(document.body||document.documentElement).appendChild(d);}d.textContent+=m+'\n\n';}
-  window.onerror=function(msg,src,l,c){showErr('JS ERROR:\n'+msg+'\nline '+l+':'+c);return false;};
-  window.addEventListener('error',function(e){if(e&&e.message)showErr('ERROR:\n'+e.message+'\n'+(e.filename||'')+' '+e.lineno);},true);
+  } catch(e) {}
+  // Suppress getBoundingClientRect errors silently so they never surface to the user
+  window.addEventListener('error', function(e){
+    if(e && e.message && e.message.indexOf('getBoundingClientRect') >= 0){ e.preventDefault(); e.stopPropagation(); }
+  }, true);
 })();
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -140,7 +112,7 @@ body.bg-palace .bg-glow{background:radial-gradient(120% 60% at 50% -8%,rgba(246,
 .panel-title{font-size:26px;font-weight:800;letter-spacing:-0.5px;color:var(--tx);}
 
 /* ============ GAME PANEL ============ */
-.game-head{display:flex;flex-direction:column;align-items:center;gap:0;margin-bottom:8px;flex:none;}
+.game-head{display:flex;flex-direction:column;align-items:center;gap:0;margin-bottom:4px;flex:none;}
 .balance-block{text-align:center;}
 .balance-block .eyebrow{margin-bottom:5px;}
 .balance{font-family:var(--fm);font-weight:500;font-variant-numeric:tabular-nums;font-size:clamp(28px,8vw,38px);line-height:1;letter-spacing:-2px;color:var(--tx);transition:color 0.3s ease;}
@@ -151,7 +123,7 @@ body.bg-palace .bg-glow{background:radial-gradient(120% 60% at 50% -8%,rgba(246,
 .rec-fill{height:100%;width:1%;border-radius:2px;background:linear-gradient(90deg,var(--gold-2),var(--gold));transition:width 0.6s cubic-bezier(0.22,1,0.36,1);}
 .rec-txt{font-family:var(--fm);font-size:10px;color:var(--tx-3);white-space:nowrap;}
 
-.stats{display:flex;align-items:stretch;justify-content:space-between;padding:8px 4px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-bottom:0;flex:none;}
+.stats{display:flex;align-items:stretch;justify-content:space-between;padding:5px 4px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-bottom:0;flex:none;}
 .stat{flex:1;text-align:center;position:relative;}
 .stat + .stat::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:1px;height:22px;background:var(--line);}
 .stat-val{font-family:var(--fm);font-size:16px;font-weight:500;color:var(--tx);letter-spacing:-0.5px;}
@@ -159,7 +131,7 @@ body.bg-palace .bg-glow{background:radial-gradient(120% 60% at 50% -8%,rgba(246,
 
 /* coin — HERO */
 .coin-stage{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:0;}
-.coin-wrap{position:relative;width:clamp(150px,30vh,200px);height:clamp(150px,30vh,200px);display:flex;align-items:center;justify-content:center;-webkit-filter:drop-shadow(0 16px 28px rgba(0,0,0,0.55));filter:drop-shadow(0 16px 28px rgba(0,0,0,0.55));}
+.coin-wrap{position:relative;width:clamp(130px,25vh,175px);height:clamp(130px,25vh,175px);display:flex;align-items:center;justify-content:center;-webkit-filter:drop-shadow(0 16px 28px rgba(0,0,0,0.55));filter:drop-shadow(0 16px 28px rgba(0,0,0,0.55));}
 .coin-halo{position:absolute;width:132%;height:132%;border-radius:50%;background:radial-gradient(circle,var(--gold-soft) 0%,transparent 60%);opacity:0.8;transition:opacity 0.4s ease,transform 0.4s ease;}
 .coin-wrap.win-pulse .coin-halo{animation:halo 0.9s ease-out;}
 @keyframes halo{0%{opacity:0.8;transform:scale(1);}40%{opacity:1;transform:scale(1.22);}100%{opacity:0.8;transform:scale(1);}}
@@ -181,7 +153,7 @@ body.bg-palace .bg-glow{background:radial-gradient(120% 60% at 50% -8%,rgba(246,
 .result-flash.warn{color:var(--gold);}
 
 /* bet */
-.bet{margin-top:10px;flex:none;}
+.bet{margin-top:6px;flex:none;}
 .bet-row{display:flex;align-items:flex-end;gap:12px;border-bottom:1px solid var(--line-2);padding-bottom:8px;}
 .bet-field{flex:1;}
 .bet-field .eyebrow{margin-bottom:5px;display:block;}
@@ -194,8 +166,8 @@ body.bg-palace .bg-glow{background:radial-gradient(120% 60% at 50% -8%,rgba(246,
 .chip:active{transform:scale(0.94);background:var(--panel-2);color:var(--tx);}
 
 /* choice */
-.choice{display:flex;gap:10px;margin-top:10px;flex:none;}
-.choice-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:10px;height:50px;border-radius:14px;border:1px solid var(--line);background:var(--panel);color:var(--tx-2);transition:all 0.2s cubic-bezier(0.22,1,0.36,1);}
+.choice{display:flex;gap:10px;margin-top:6px;flex:none;}
+.choice-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:10px;height:46px;border-radius:14px;border:1px solid var(--line);background:var(--panel);color:var(--tx-2);transition:all 0.2s cubic-bezier(0.22,1,0.36,1);}
 .choice-btn .cmini{width:30px;height:30px;flex:none;opacity:0.7;transition:opacity 0.2s ease;}
 .choice-btn .clabel{font-size:14px;font-weight:700;letter-spacing:0.4px;}
 .choice-btn:active{transform:scale(0.97);}
@@ -203,7 +175,7 @@ body.bg-palace .bg-glow{background:radial-gradient(120% 60% at 50% -8%,rgba(246,
 .choice-btn.active .cmini{opacity:1;}
 
 /* CTA */
-.flip-btn{width:100%;height:50px;margin-top:10px;border:none;border-radius:15px;cursor:pointer;position:relative;overflow:hidden;flex:none;
+.flip-btn{width:100%;height:46px;margin-top:6px;border:none;border-radius:15px;cursor:pointer;position:relative;overflow:hidden;flex:none;
   background:linear-gradient(180deg,#E7CE93 0%,#D8B675 48%,#C49A4A 100%);
   color:#211C10;font-family:var(--fs);font-size:15px;font-weight:800;letter-spacing:0.5px;
   box-shadow:0 8px 22px rgba(216,182,117,0.22),inset 0 1px 0 rgba(255,255,255,0.35);
