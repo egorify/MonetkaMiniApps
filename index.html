@@ -520,7 +520,21 @@ function save(){try{localStorage.setItem('monetka',JSON.stringify(state));}catch
 // ══════════════════════════════════════ TELEGRAM
 var tg=null;
 try{tg=window.Telegram&&window.Telegram.WebApp?window.Telegram.WebApp:null;}catch(e){}
-function initTelegram(){try{if(tg){tg.ready();tg.expand();if(tg.requestFullscreen)tg.requestFullscreen();if(tg.setHeaderColor)tg.setHeaderColor('#0A0B0D');if(tg.setBackgroundColor)tg.setBackgroundColor('#0A0B0D');if(tg.onEvent)tg.onEvent('fullscreenChanged',function(){if(tg.isFullscreen===false&&tg.requestFullscreen)tg.requestFullscreen();});}}catch(e){}}
+function initTelegram(){
+  try{
+    if(tg){
+      tg.ready();
+      tg.expand();
+      function _fs(){try{if(tg.requestFullscreen)tg.requestFullscreen();}catch(e){}}
+      _fs();
+      setTimeout(_fs,300);
+      setTimeout(_fs,800);
+      if(tg.setHeaderColor)tg.setHeaderColor('#0A0B0D');
+      if(tg.setBackgroundColor)tg.setBackgroundColor('#0A0B0D');
+      if(tg.onEvent)tg.onEvent('fullscreenChanged',function(){if(!tg.isFullscreen)setTimeout(_fs,100);});
+    }
+  }catch(e){}
+}
 function haptic(kind){
   try{
     if(tg&&tg.HapticFeedback){
