@@ -90,10 +90,10 @@ body.bg-palace .bg-glow{background:radial-gradient(120% 60% at 50% -8%,rgba(246,
 
 /* ============ APP / SLIDER ============ */
 #app{position:fixed;top:0;left:0;right:0;bottom:0;z-index:1;overflow:hidden;touch-action:none;}
-.slider-track{display:flex;width:300%;height:100%;will-change:transform;-webkit-transform:translateZ(0);transform:translateZ(0);
+.slider-track{display:flex;width:400%;height:100%;will-change:transform;-webkit-transform:translateZ(0);transform:translateZ(0);
   transition:-webkit-transform 0.5s cubic-bezier(0.22,1,0.36,1);transition:transform 0.5s cubic-bezier(0.22,1,0.36,1);}
 .slider-track.dragging{transition:none;}
-.panel{width:33.3333%;height:100%;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;
+.panel{width:25%;height:100%;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;
   padding:calc(env(safe-area-inset-top,0px) + 88px) 22px calc(env(safe-area-inset-bottom,0px) + 34px);}
 .panel::-webkit-scrollbar{display:none;}
 #game-panel{overflow:hidden;display:flex;flex-direction:column;
@@ -272,6 +272,16 @@ body.bg-palace .bg-glow{background:radial-gradient(120% 60% at 50% -8%,rgba(246,
 @keyframes fingerBob{0%,100%{transform:translateX(-14px);}50%{transform:translateX(14px);}}
 .hint-btn{padding:15px 44px;border-radius:14px;border:1px solid var(--gold-line);background:var(--gold-soft);color:var(--gold);font-size:14px;font-weight:700;letter-spacing:0.5px;transition:transform 0.12s ease;}
 .hint-btn:active{transform:scale(0.96);}
+.hint-steps{display:flex;flex-direction:column;gap:14px;margin:18px 0 28px;width:100%;max-width:320px;padding:0 4px;}
+.hint-step{display:flex;align-items:flex-start;gap:14px;padding:14px 16px;border-radius:16px;background:rgba(255,255,255,0.04);border:1px solid var(--line);}
+.hint-step-icon{font-size:24px;flex:none;line-height:1;}
+.hint-step-info b{display:block;font-size:13px;font-weight:800;color:var(--tx);margin-bottom:3px;}
+.hint-step-info span{font-size:12px;color:var(--tx-2);line-height:1.45;}
+/* tasks panel */
+.tasks-coming{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:60px 0;}
+.tasks-coming .tc-icon{font-size:64px;}
+.tasks-coming .tc-title{font-size:22px;font-weight:800;color:var(--tx);}
+.tasks-coming .tc-sub{font-size:14px;color:var(--tx-3);text-align:center;line-height:1.6;max-width:240px;}
 
 /* ============ MODALS ============ */
 .overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(8,9,11,0.8);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);z-index:500;align-items:center;justify-content:center;padding:28px;}
@@ -314,7 +324,7 @@ body.bg-palace .bg-glow{background:radial-gradient(120% 60% at 50% -8%,rgba(246,
 <div id="app">
   <canvas class="particle-canvas" id="pcv"></canvas>
   <div class="stars" id="stars"></div>
-  <div class="nav"><div class="dot" id="dot0"></div><div class="dot active" id="dot1"></div><div class="dot" id="dot2"></div></div>
+  <div class="nav"><div class="dot" id="dot0"></div><div class="dot active" id="dot1"></div><div class="dot" id="dot2"></div><div class="dot" id="dot3"></div></div>
   <button class="sound-btn" id="sound-btn" onclick="toggleSound()">🔊</button>
 
   <div class="slider-track" id="slider">
@@ -391,6 +401,16 @@ body.bg-palace .bg-glow{background:radial-gradient(120% 60% at 50% -8%,rgba(246,
       <div class="history" id="hist"></div>
     </div>
 
+    <!-- ===== TASKS ===== -->
+    <div class="panel" id="tasks-panel">
+      <div class="panel-title">Задания</div>
+      <div class="tasks-coming">
+        <div class="tc-icon">🎯</div>
+        <div class="tc-title">Скоро</div>
+        <div class="tc-sub">Здесь появятся ежедневные задания с наградами. Следи за обновлениями!</div>
+      </div>
+    </div>
+
     <!-- ===== LEADERBOARD ===== -->
     <div class="panel" id="lb-panel">
       <div class="panel-title">Лидеры</div>
@@ -419,13 +439,29 @@ body.bg-palace .bg-glow{background:radial-gradient(120% 60% at 50% -8%,rgba(246,
 <div class="swipe-hint" id="hint">
   <div class="hint-coin" id="hint-coin"></div>
   <div class="hint-title">Как играть</div>
-  <div class="hint-sub">Свайпай влево и вправо, чтобы переключать экраны</div>
-  <div class="hint-swipe">
-    <div class="hint-col"><div class="hint-arrow">←</div><div class="hint-lbl">Магазин</div></div>
-    <div class="hint-finger">👆</div>
-    <div class="hint-col"><div class="hint-arrow">→</div><div class="hint-lbl">Лидеры</div></div>
+  <div class="hint-steps">
+    <div class="hint-step">
+      <div class="hint-step-icon">👆</div>
+      <div class="hint-step-info"><b>Навигация</b><span>Свайпай влево/вправо: Магазин → Игра → Задания → Лидеры</span></div>
+    </div>
+    <div class="hint-step">
+      <div class="hint-step-icon">💰</div>
+      <div class="hint-step-info"><b>Ставка</b><span>Введи сумму вручную или используй кнопки: Мин, ½, 25%, 50%, 75%, Всё</span></div>
+    </div>
+    <div class="hint-step">
+      <div class="hint-step-icon">🪙</div>
+      <div class="hint-step-info"><b>Игра</b><span>Выбери Орёл или Решка, затем нажми «Подбросить монету». Угадай — удвоишь ставку!</span></div>
+    </div>
+    <div class="hint-step">
+      <div class="hint-step-icon">🛍️</div>
+      <div class="hint-step-info"><b>Магазин</b><span>Покупай скины монет и фоны за выигранные монеты</span></div>
+    </div>
+    <div class="hint-step">
+      <div class="hint-step-icon">🏆</div>
+      <div class="hint-step-info"><b>Лидеры</b><span>Соревнуйся с другими игроками — кто накопит больше всего</span></div>
+    </div>
   </div>
-  <button class="hint-btn" onclick="closeHint()">Понятно</button>
+  <button class="hint-btn" onclick="closeHint()">Начать игру</button>
 </div>
 
 <!-- LOSE MODAL -->
@@ -686,18 +722,18 @@ var curPanel=1;
 var slider=null;
 var touchStartX=0,touchStartY=0,isDragging=false,startOffset=0;
 var mouseDown=false,mouseStartX=0;
-function getOffset(p){return-(p*(100/3));}
+function getOffset(p){return-(p*(100/4));}
 function snapTo(p,animate){
   if(animate===undefined)animate=true;
-  p=Math.max(0,Math.min(2,p));curPanel=p;
+  p=Math.max(0,Math.min(3,p));curPanel=p;
   if(!slider)return;
   if(animate)slider.classList.remove('dragging');else slider.classList.add('dragging');
   slider.style.transform='translateX('+getOffset(p)+'%)';
   updateDots();
   if(p===0)renderShop();
-  if(p===2)renderLB();
+  if(p===3)renderLB();
 }
-function updateDots(){for(var i=0;i<3;i++){var d=document.getElementById('dot'+i);if(d)d.className='dot'+(i===curPanel?' active':'');}}
+function updateDots(){for(var i=0;i<4;i++){var d=document.getElementById('dot'+i);if(d)d.className='dot'+(i===curPanel?' active':'');}}
 
 // ══════════════════════════════════════ HINT
 function closeHint(){var h=document.getElementById('hint');if(!h)return;h.classList.add('hide');state.hintSeen=true;save();setTimeout(function(){h.style.display='none';},550);}
@@ -923,7 +959,7 @@ function __init(){
   if(app){
     app.addEventListener('touchstart',function(e){touchStartX=e.touches[0].clientX;touchStartY=e.touches[0].clientY;startOffset=curPanel*window.innerWidth;isDragging=false;},{passive:true});
     app.addEventListener('touchmove',function(e){var dx=e.touches[0].clientX-touchStartX;var dy=e.touches[0].clientY-touchStartY;if(!isDragging&&Math.abs(dy)>Math.abs(dx))return;isDragging=true;e.preventDefault();var pct=((-startOffset+dx)/(window.innerWidth*3))*100;if(slider){slider.classList.add('dragging');slider.style.transform='translateX('+pct+'%)';}},{passive:false});
-    app.addEventListener('touchend',function(e){if(!isDragging)return;var dx=e.changedTouches[0].clientX-touchStartX;var thr=window.innerWidth*0.18;var t=curPanel;if(dx<-thr)t=Math.min(2,curPanel+1);else if(dx>thr)t=Math.max(0,curPanel-1);snapTo(t,true);isDragging=false;});
+    app.addEventListener('touchend',function(e){if(!isDragging)return;var dx=e.changedTouches[0].clientX-touchStartX;var thr=window.innerWidth*0.18;var t=curPanel;if(dx<-thr)t=Math.min(3,curPanel+1);else if(dx>thr)t=Math.max(0,curPanel-1);snapTo(t,true);isDragging=false;});
     app.addEventListener('mousedown',function(e){mouseDown=true;mouseStartX=e.clientX;startOffset=curPanel*window.innerWidth;});
   }
   window.addEventListener('mousemove',function(e){if(!mouseDown)return;var dx=e.clientX-mouseStartX;var pct=((-startOffset+dx)/(window.innerWidth*3))*100;if(slider){slider.classList.add('dragging');slider.style.transform='translateX('+pct+'%)';}});
