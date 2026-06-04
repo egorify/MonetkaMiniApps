@@ -97,7 +97,7 @@ body.bg-palace .bg-glow{background:radial-gradient(120% 60% at 50% -8%,rgba(246,
   padding:calc(env(safe-area-inset-top,0px) + 56px) 22px calc(env(safe-area-inset-bottom,0px) + 34px);}
 .panel::-webkit-scrollbar{display:none;}
 #game-panel{overflow:hidden;display:flex;flex-direction:column;
-  padding-top:calc(env(safe-area-inset-top,0px) + 68px);
+  padding-top:calc(env(safe-area-inset-top,0px) + 88px);
   padding-bottom:calc(env(safe-area-inset-bottom,0px) + 12px);
   padding-left:20px;padding-right:20px;}
 
@@ -843,6 +843,14 @@ var __inited=false;
 function __init(){
   if(__inited)return;__inited=true;
   initTelegram();
+
+  // Lock app height so iOS keyboard doesn't shrink the layout and shift the coin
+  var _lockedH=window.innerHeight,_lockedW=window.innerWidth;
+  function _applyLockedH(){var h=_lockedH+'px';document.body.style.height=h;var a=document.getElementById('app');if(a)a.style.height=h;}
+  _applyLockedH();
+  window.addEventListener('resize',function(){if(window.innerWidth!==_lockedW){_lockedH=window.innerHeight;_lockedW=window.innerWidth;_applyLockedH();}});
+  if(window.visualViewport){window.visualViewport.addEventListener('resize',function(){if(Math.round(window.visualViewport.width)!==_lockedW){_lockedH=Math.round(window.visualViewport.height);_lockedW=Math.round(window.visualViewport.width);_applyLockedH();}});}
+
   var sbtn=document.getElementById('sound-btn');if(sbtn){sbtn.textContent=soundOn?'🔊':'🔇';sbtn.style.color=soundOn?'':'var(--tx-3)';}
   slider=document.getElementById('slider');
   var app=document.getElementById('app');
