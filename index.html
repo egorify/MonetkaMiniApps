@@ -5,6 +5,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
 <title>Монетка</title>
 <script>
+// iOS Safari polyfill: telegram-web-app.js has a typo getBoundingclientRect (lowercase c)
+// which crashes on iOS WebKit where the method is strictly getBoundingClientRect
+(function(){
+  var origGetBoundingClientRect = Element.prototype.getBoundingClientRect;
+  Object.defineProperty(Element.prototype, 'getBoundingclientRect', {
+    value: function() { return origGetBoundingClientRect.call(this); },
+    writable: true, configurable: true
+  });
+  // Also patch getBoundingClientRect to never return undefined on iOS
+  Element.prototype.getBoundingClientRect = function(){
+    var rect = origGetBoundingClientRect.call(this);
+    if(!rect){
+      return {top:0,left:0,bottom:0,right:0,width:0,height:0,x:0,y:0,toJSON:function(){}};
+    }
+    return rect;
+  };
+})();
+</script>
+<script>
 // Early error capture — surfaces any JS/parse error visibly
 (function(){
   function showErr(m){var d=document.getElementById('__err');if(!d){d=document.createElement('div');d.id='__err';d.style.cssText='position:fixed;top:0;left:0;right:0;z-index:99999;background:#b00020;color:#fff;font:12px/1.4 monospace;padding:12px;white-space:pre-wrap;word-break:break-word;max-height:55%;overflow:auto';(document.body||document.documentElement).appendChild(d);}d.textContent+=m+'\n\n';}
