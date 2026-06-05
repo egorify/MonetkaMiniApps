@@ -97,8 +97,8 @@ body.bg-palace .bg-glow{background:radial-gradient(120% 60% at 50% -8%,rgba(246,
   padding:calc(env(safe-area-inset-top,0px) + 88px) 22px calc(env(safe-area-inset-bottom,0px) + 34px);}
 .panel::-webkit-scrollbar{display:none;}
 #game-panel{overflow:hidden;display:flex;flex-direction:column;
-  padding-top:calc(env(safe-area-inset-top,0px) + 112px);
-  padding-bottom:calc(env(safe-area-inset-bottom,0px) + 12px);
+  padding-top:calc(env(safe-area-inset-top,0px) + 90px);
+  padding-bottom:calc(env(safe-area-inset-bottom,0px) + 16px);
   padding-left:20px;padding-right:20px;}
 
 /* ============ NAV DOTS ============ */
@@ -112,7 +112,7 @@ body.bg-palace .bg-glow{background:radial-gradient(120% 60% at 50% -8%,rgba(246,
 .panel-title{font-size:26px;font-weight:800;letter-spacing:-0.5px;color:var(--tx);}
 
 /* ============ GAME PANEL ============ */
-.game-head{display:flex;flex-direction:column;align-items:center;gap:0;margin-bottom:8px;flex:none;}
+.game-head{display:flex;flex-direction:column;align-items:center;gap:0;margin-bottom:6px;flex:none;}
 .balance-block{text-align:center;}
 .balance-block .eyebrow{margin-bottom:5px;}
 .balance{font-family:var(--fm);font-weight:500;font-variant-numeric:tabular-nums;font-size:clamp(28px,8vw,38px);line-height:1;letter-spacing:-2px;color:var(--tx);transition:color 0.3s ease;}
@@ -123,15 +123,15 @@ body.bg-palace .bg-glow{background:radial-gradient(120% 60% at 50% -8%,rgba(246,
 .rec-fill{height:100%;width:1%;border-radius:2px;background:linear-gradient(90deg,var(--gold-2),var(--gold));transition:width 0.6s cubic-bezier(0.22,1,0.36,1);}
 .rec-txt{font-family:var(--fm);font-size:10px;color:var(--tx-3);white-space:nowrap;}
 
-.stats{display:flex;align-items:stretch;justify-content:space-between;padding:8px 4px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-bottom:0;flex:none;}
+.stats{display:flex;align-items:stretch;justify-content:space-between;padding:6px 4px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-bottom:0;flex:none;}
 .stat{flex:1;text-align:center;position:relative;}
 .stat + .stat::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:1px;height:22px;background:var(--line);}
 .stat-val{font-family:var(--fm);font-size:16px;font-weight:500;color:var(--tx);letter-spacing:-0.5px;}
 .stat-lbl{font-size:9px;font-weight:600;letter-spacing:1.4px;text-transform:uppercase;color:var(--tx-3);margin-top:3px;}
 
 /* coin — HERO */
-.coin-stage{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 0 0;margin-top:55px;}
-.coin-wrap{position:relative;width:clamp(150px,30vh,200px);height:clamp(150px,30vh,200px);display:flex;align-items:center;justify-content:center;-webkit-filter:drop-shadow(0 16px 28px rgba(0,0,0,0.55));filter:drop-shadow(0 16px 28px rgba(0,0,0,0.55));}
+.coin-stage{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 0 0;margin-top:clamp(14px,2.2vh,26px);}
+.coin-wrap{position:relative;width:clamp(140px,26vh,180px);height:clamp(140px,26vh,180px);display:flex;align-items:center;justify-content:center;-webkit-filter:drop-shadow(0 16px 28px rgba(0,0,0,0.55));filter:drop-shadow(0 16px 28px rgba(0,0,0,0.55));}
 .coin-halo{position:absolute;width:132%;height:132%;border-radius:50%;background:radial-gradient(circle,var(--gold-soft) 0%,transparent 60%);opacity:0.8;transition:opacity 0.4s ease,transform 0.4s ease;}
 .coin-wrap.win-pulse .coin-halo{animation:halo 0.9s ease-out;}
 @keyframes halo{0%{opacity:0.8;transform:scale(1);}40%{opacity:1;transform:scale(1.22);}100%{opacity:0.8;transform:scale(1);}}
@@ -170,7 +170,7 @@ body.bg-palace .bg-glow{background:radial-gradient(120% 60% at 50% -8%,rgba(246,
 .chip:active{transform:scale(0.94);background:var(--panel-2);color:var(--tx);}
 
 /* choice */
-.choice{display:flex;gap:10px;margin-top:8px;flex:none;}
+.choice{display:flex;gap:10px;margin-top:10px;flex:none;}
 .choice-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:12px;height:68px;border-radius:18px;border:1.5px solid var(--line-2);background:var(--panel);color:var(--tx-2);transition:all 0.2s cubic-bezier(0.22,1,0.36,1);}
 .choice-btn .cmini{width:38px;height:38px;flex:none;opacity:0.7;transition:opacity 0.2s ease;}
 .choice-btn .clabel{font-size:18px;font-weight:800;letter-spacing:0.3px;}
