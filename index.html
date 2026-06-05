@@ -190,11 +190,11 @@ body.bg-palace .bg-glow{background:radial-gradient(120% 60% at 50% -8%,rgba(246,
 .flip-btn:disabled{opacity:0.45;}
 
 /* history */
-.history{display:flex;align-items:center;gap:5px;margin-top:6px;justify-content:center;flex-wrap:nowrap;overflow:hidden;min-height:14px;flex:none;}
+.history{display:flex;align-items:center;gap:5px;margin-top:10px;justify-content:center;flex-wrap:nowrap;overflow:hidden;flex:none;height:8px;}
 .history.empty{display:none;}
-.h-dot{width:16px;height:16px;border-radius:5px;flex:none;display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-size:8px;font-weight:600;}
-.h-dot.w{background:rgba(86,217,163,0.14);color:var(--win);}
-.h-dot.l{background:rgba(251,113,133,0.13);color:var(--lose);}
+.h-dot{width:8px;height:8px;border-radius:50%;flex:none;transition:opacity 0.2s ease;}
+.h-dot.w{background:var(--win);opacity:0.75;}
+.h-dot.l{background:var(--lose);opacity:0.6;}
 
 
 /* ============ SHOP PANEL ============ */
@@ -782,7 +782,7 @@ function updateUI(fromBal){
   document.getElementById('s-streak').textContent=state.streak;
   document.getElementById('s-best').textContent=state.bestStreak;
   var hEl=document.getElementById('hist');
-  if(hEl){hEl.innerHTML=state.hist.slice(0,16).map(function(w){return'<div class="h-dot '+(w?'w':'l')+'">'+(w?'В':'П')+'</div>';}).join('');hEl.className='history'+(state.hist.length===0?' empty':'');}
+  if(hEl){hEl.innerHTML=state.hist.slice(0,12).map(function(w){return'<div class="h-dot '+(w?'w':'l')+'"></div>';}).join('');hEl.className='history'+(state.hist.length===0?' empty':'');}
   var sb=document.getElementById('shop-bal');if(sb)sb.textContent=fmt(state.bal);
 }
 
@@ -864,7 +864,7 @@ function flip(){
       showMsg('−'+fmt(sv),'lose');flashBal('fl');sndLose();haptic('lose');
       var cw=document.getElementById('coin-wrap');if(cw){cw.classList.add('shaking');setTimeout(function(){cw.classList.remove('shaking');},600);}
     }
-    state.rounds++;state.hist.unshift(won);if(state.hist.length>16)state.hist.pop();
+    state.rounds++;state.hist.unshift(won);if(state.hist.length>12)state.hist.pop();
     save();
     syncPlayer();
     checkAchievements();
