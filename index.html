@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>Монетка</title>
 <script>
 // Polyfill getBoundingClientRect for SVG elements on older iOS WebKit
@@ -997,16 +1000,16 @@ function goTab(p){if(p===curPanel)return;snapTo(p,true);haptic('light');if(sound
 function _showBar(){var b=document.querySelector('.topbar');if(b)b.classList.remove('hide-bar');var s=document.getElementById('sound-btn');if(s)s.classList.remove('hide-bar');}
 function _setBar(hidden){var b=document.querySelector('.topbar');if(b)b.classList.toggle('hide-bar',hidden);var s=document.getElementById('sound-btn');if(s)s.classList.toggle('hide-bar',hidden);}
 function wireScrollHide(){
-  ['shop-panel','tasks-panel','lb-panel'].forEach(function(id){
-    var el=document.getElementById(id);if(!el)return;
-    var last=0;
-    el.addEventListener('scroll',function(){
-      var t=el.scrollTop;
-      if(t>last+2&&t>54)_setBar(true);          // scrolling down — hide
-      else if(t<last-4||t<=8)_setBar(false);    // scrolling up / near top — show
-      last=t;
-    },{passive:true});
-  });
+  var last={};
+  // capture phase catches scroll from ANY scrollable panel (scroll doesn't bubble)
+  document.addEventListener('scroll',function(e){
+    var el=e.target;
+    if(!el||!el.id||['shop-panel','tasks-panel','lb-panel'].indexOf(el.id)<0)return;
+    var t=el.scrollTop||0,lv=last[el.id]||0;
+    if(t>lv+1&&t>40)_setBar(true);            // scrolling down — hide
+    else if(t<lv-3||t<=6)_setBar(false);      // scrolling up / near top — show
+    last[el.id]=t;
+  },true);
 }
 
 // ══════════════════════════════════════ HINT
