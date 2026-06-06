@@ -472,6 +472,11 @@ body{background:#070611;font-weight:500;letter-spacing:0.1px;color:#EDEBFF;}
 .hint-btn{border:1px solid var(--gold-line);background:linear-gradient(180deg,rgba(139,92,246,0.24),rgba(34,211,238,0.08));color:#fff;}
 .hint-arrow{color:var(--neon-cy);}
 .hint-title{color:#fff;}
+/* auto-hide top bar on scroll (shop/tasks/leaders) */
+.topbar{transition:transform .32s cubic-bezier(.4,0,.2,1),opacity .25s ease;}
+.sound-btn{transition:transform .14s,opacity .25s ease;}
+.topbar.hide-bar{transform:translateY(-170%);opacity:0;pointer-events:none;}
+.sound-btn.hide-bar{opacity:0;pointer-events:none;transform:translateY(-10px);}
 </style>
 
 </head>
@@ -981,7 +986,7 @@ function snapTo(p,animate){
   if(!slider)return;
   if(animate){slider.classList.remove('dragging');}else{slider.classList.add('dragging');}
   slider.style.transform='translateX('+getOffset(p)+'%)';
-  updateDots();
+  updateDots();_showBar();
   if(animate&&p!==prev)_haptic('light');
   if(p===0)renderShop();
   if(p===2)renderTasks();
@@ -989,6 +994,20 @@ function snapTo(p,animate){
 }
 function updateDots(){var ts=document.querySelectorAll('.tab');for(var i=0;i<ts.length;i++){var p=parseInt(ts[i].getAttribute('data-p'),10);ts[i].className='tab'+(p===curPanel?' active':'');}}
 function goTab(p){if(p===curPanel)return;snapTo(p,true);haptic('light');if(soundOn)sndClick();}
+function _showBar(){var b=document.querySelector('.topbar');if(b)b.classList.remove('hide-bar');var s=document.getElementById('sound-btn');if(s)s.classList.remove('hide-bar');}
+function _setBar(hidden){var b=document.querySelector('.topbar');if(b)b.classList.toggle('hide-bar',hidden);var s=document.getElementById('sound-btn');if(s)s.classList.toggle('hide-bar',hidden);}
+function wireScrollHide(){
+  ['shop-panel','tasks-panel','lb-panel'].forEach(function(id){
+    var el=document.getElementById(id);if(!el)return;
+    var last=0;
+    el.addEventListener('scroll',function(){
+      var t=el.scrollTop;
+      if(t>last+2&&t>54)_setBar(true);          // scrolling down — hide
+      else if(t<last-4||t<=8)_setBar(false);    // scrolling up / near top — show
+      last=t;
+    },{passive:true});
+  });
+}
 
 // ══════════════════════════════════════ HINT
 function closeHint(){var h=document.getElementById('hint');if(!h)return;h.classList.add('hide');state.hintSeen=true;save();setTimeout(function(){h.style.display='none';},550);}
@@ -1358,6 +1377,7 @@ function __init(){
 
   var sbtn=document.getElementById('sound-btn');if(sbtn){sbtn.textContent=soundOn?'🔊':'🔇';sbtn.style.color=soundOn?'':'var(--tx-3)';}
   slider=document.getElementById('slider');
+  wireScrollHide();
   var app=document.getElementById('app');
   if(app){
     app.addEventListener('touchstart',function(e){
