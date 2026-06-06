@@ -131,18 +131,21 @@ body.bg-palace .bg-glow{background:radial-gradient(120% 60% at 50% -8%,rgba(246,
 
 /* coin — HERO */
 .coin-stage{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 0 0;margin-top:clamp(14px,2.2vh,26px);}
-.coin-wrap{position:relative;width:clamp(140px,26vh,180px);height:clamp(140px,26vh,180px);display:flex;align-items:center;justify-content:center;-webkit-filter:drop-shadow(0 16px 28px rgba(0,0,0,0.55));filter:drop-shadow(0 16px 28px rgba(0,0,0,0.55));}
-.coin-halo{position:absolute;width:132%;height:132%;border-radius:50%;background:radial-gradient(circle,var(--gold-soft) 0%,transparent 60%);opacity:0.8;transition:opacity 0.4s ease,transform 0.4s ease;}
-.coin-wrap.win-pulse .coin-halo{animation:halo 0.9s ease-out;}
-@keyframes halo{0%{opacity:0.8;transform:scale(1);}40%{opacity:1;transform:scale(1.22);}100%{opacity:0.8;transform:scale(1);}}
+.coin-wrap{position:relative;width:clamp(140px,26vh,180px);height:clamp(140px,26vh,180px);display:flex;align-items:center;justify-content:center;-webkit-filter:drop-shadow(0 16px 28px rgba(0,0,0,0.55));filter:drop-shadow(0 16px 28px rgba(0,0,0,0.55));animation:coinFloat 5s ease-in-out infinite;}
+@keyframes coinFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-7px);}}
+.coin-halo{position:absolute;width:138%;height:138%;border-radius:50%;background:radial-gradient(circle,var(--gold-soft) 0%,rgba(216,182,117,0.05) 42%,transparent 64%);opacity:0.85;transition:opacity 0.4s ease,transform 0.4s ease;}
+.coin-wrap.win-pulse .coin-halo{animation:halo 0.95s ease-out;}
+@keyframes halo{0%{opacity:0.85;transform:scale(1);}38%{opacity:1;transform:scale(1.26);}100%{opacity:0.85;transform:scale(1);}}
 .coin{position:relative;width:90%;height:90%;transform-style:preserve-3d;-webkit-transform-style:preserve-3d;}
 .coin-face{position:absolute;top:0;left:0;width:100%;height:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;align-items:center;justify-content:center;}
 .coin-face svg{width:100%;height:100%;display:block;}
 .coin-back{transform:rotateY(180deg);-webkit-transform:rotateY(180deg);}
-.coin.flipping{animation:flip 1.4s cubic-bezier(0.33,0.06,0.2,1);}
+.coin.flipping{animation:flip 1.4s cubic-bezier(0.30,0.02,0.18,1);}
 @keyframes flip{
   0%{transform:rotateY(0deg) translateY(0) scale(1);}
-  48%{transform:rotateY(900deg) translateY(-50px) scale(1.08);}
+  14%{transform:rotateY(220deg) translateY(-28px) scale(1.05);}
+  50%{transform:rotateY(900deg) translateY(-66px) scale(1.12);}
+  86%{transform:rotateY(1580deg) translateY(-12px) scale(1.05);}
   100%{transform:rotateY(1800deg) translateY(0) scale(1);}
 }
 
@@ -524,8 +527,6 @@ const BACKGROUNDS=[
 ];
 const TIER_BADGE={base:'',cheap:'базовый',medium:'средний',premium:'премиум',legendary:'легенда'};
 const TIER_CLS={base:'',cheap:'badge-cheap',medium:'badge-medium',premium:'badge-premium',legendary:'badge-legendary'};
-const LB_NAMES=['Артём_77','КириллК','МаксDragon','ПавелRich','АняPro','СашаLucky','РомаX','ДашаGold','ИванBoss','ЛераWin'];
-const LB_AVS=['А','К','М','П','А','С','Р','Д','И','Л'];
 const LB_COLS=['rgba(216,182,117,0.14)','rgba(86,217,163,0.12)','rgba(251,113,133,0.12)','rgba(143,180,251,0.12)','rgba(196,155,240,0.12)'];
 
 // ══════════════════════════════════════ SUPABASE
@@ -588,6 +589,7 @@ function pfFetchBalance(){
         if(typeof srv.balance==='number'&&srv.balance!==state.bal){
           state.bal=srv.balance;
           state.streak=srv.streak||0;
+          if(state.bal>state.record)state.record=state.bal;
           save();updateUI();
         }
       }
@@ -678,73 +680,109 @@ var ACHIEVEMENTS=[
 ];
 function checkAchievements(){
   if(!state.achievements)state.achievements=[];
-  var unlocked=false;
+  var unlocked=false,shown=0;
   for(var i=0;i<ACHIEVEMENTS.length;i++){
     var a=ACHIEVEMENTS[i];
     if(state.achievements.indexOf(a.id)<0&&a.cond(state)){
       state.achievements.push(a.id);state.bal+=a.reward;if(state.bal>state.record)state.record=state.bal;
       unlocked=true;
-      (function(ac){setTimeout(function(){toast('Достижение: '+ac.name,'+'+fmt(ac.reward),'🏆');sndCoin();haptic('win');},unlocked?300:0);})(a);
+      // разносим тосты во времени, чтобы при нескольких достижениях сразу каждое было видно
+      (function(ac,idx){setTimeout(function(){toast('Достижение: '+ac.name,'+'+fmt(ac.reward),'🏆');sndCoin();haptic('win');},250+idx*1700);})(a,shown++);
     }
   }
   if(unlocked){save();}
   return unlocked;
 }
 
-// ══════════════════════════════════════ COIN (engraved medallion)
+// ══════════════════════════════════════ COIN (struck-relief medallion)
 function coinSVG(sid,side,sz){
   var sk=null;for(var i=0;i<SKINS.length;i++){if(SKINS[i].id===sid){sk=SKINS[i];break;}}
   if(!sk)sk=SKINS[0];
   var c=side==='eagle'?sk.ec:sk.tc;   // [hi, main, mid, dark, edge]
-  var t=sk.txt;                        // engraving dark tone
-  var hl='rgba(255,255,255,0.28)';     // relief highlight
+  var t=sk.txt;                        // deep engraving tone
+  var hl='rgba(255,255,255,0.36)';     // relief highlight catch
   var u=sid+'_'+side+'_'+sz;
   var ser="Georgia,'Times New Roman',serif";
+
+  // struck relief: dark shadow (down-right) + light catch (up-left) + metal face.
+  // `inner` uses absolute coords; nested translate composes with the offset groups.
+  function rg(inner){
+    return '<g transform="translate(1.4,1.6)" fill="'+t+'" opacity="0.55">'+inner+'</g>'+
+           '<g transform="translate(-1,-1.1)" fill="'+hl+'" opacity="0.5">'+inner+'</g>'+
+           '<g fill="'+c[2]+'" opacity="0.95">'+inner+'</g>';
+  }
+
   var s='';
   s+='<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="'+sz+'" height="'+sz+'">';
   s+='<defs>';
-  s+='<radialGradient id="f_'+u+'" cx="38%" cy="32%" r="72%"><stop offset="0%" stop-color="'+c[0]+'"/><stop offset="30%" stop-color="'+c[1]+'"/><stop offset="72%" stop-color="'+c[2]+'"/><stop offset="100%" stop-color="'+c[3]+'"/></radialGradient>';
-  s+='<radialGradient id="sp_'+u+'" cx="36%" cy="28%" r="40%"><stop offset="0%" stop-color="rgba(255,255,255,0.5)"/><stop offset="100%" stop-color="rgba(255,255,255,0)"/></radialGradient>';
-  s+='<radialGradient id="sd_'+u+'" cx="70%" cy="76%" r="48%"><stop offset="0%" stop-color="rgba(0,0,0,0.28)"/><stop offset="100%" stop-color="rgba(0,0,0,0)"/></radialGradient>';
+  // domed metal field — off-axis hotspot top-left
+  s+='<radialGradient id="f_'+u+'" cx="37%" cy="29%" r="78%"><stop offset="0%" stop-color="'+c[0]+'"/><stop offset="23%" stop-color="'+c[1]+'"/><stop offset="60%" stop-color="'+c[2]+'"/><stop offset="100%" stop-color="'+c[3]+'"/></radialGradient>';
+  // rim band — top-lit metal ring
+  s+='<linearGradient id="rm_'+u+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="'+c[0]+'"/><stop offset="44%" stop-color="'+c[2]+'"/><stop offset="100%" stop-color="'+c[4]+'"/></linearGradient>';
+  // specular bloom
+  s+='<radialGradient id="sp_'+u+'" cx="33%" cy="24%" r="44%"><stop offset="0%" stop-color="rgba(255,255,255,0.6)"/><stop offset="52%" stop-color="rgba(255,255,255,0.1)"/><stop offset="100%" stop-color="rgba(255,255,255,0)"/></radialGradient>';
+  // edge vignette for dome depth
+  s+='<radialGradient id="vg_'+u+'" cx="50%" cy="50%" r="50%"><stop offset="66%" stop-color="rgba(0,0,0,0)"/><stop offset="100%" stop-color="rgba(0,0,0,0.36)"/></radialGradient>';
+  // recessed inner pan
+  s+='<radialGradient id="in_'+u+'" cx="50%" cy="42%" r="58%"><stop offset="0%" stop-color="'+c[1]+'"/><stop offset="68%" stop-color="'+c[2]+'"/><stop offset="100%" stop-color="'+c[3]+'"/></radialGradient>';
   s+='</defs>';
-  // edge / rim
-  s+='<circle cx="100" cy="100" r="99" fill="'+c[4]+'"/>';
-  s+='<circle cx="100" cy="100" r="96" fill="'+c[3]+'"/>';
-  // reeded edge
-  s+='<circle cx="100" cy="100" r="94" fill="none" stroke="'+c[2]+'" stroke-width="5" stroke-dasharray="1.4 3.2" opacity="0.45"/>';
-  // field
-  s+='<circle cx="100" cy="100" r="90" fill="url(#f_'+u+')"/>';
-  s+='<circle cx="100" cy="100" r="90" fill="url(#sp_'+u+')"/>';
-  s+='<circle cx="100" cy="100" r="90" fill="url(#sd_'+u+')"/>';
-  // inner bevel ring (recessed)
-  s+='<circle cx="100" cy="100" r="74" fill="none" stroke="'+t+'" stroke-width="1.2" opacity="0.45"/>';
-  s+='<circle cx="100" cy="100" r="72.4" fill="none" stroke="'+hl+'" stroke-width="1" opacity="0.5"/>';
-  // arc text
-  s+='<path id="ta_'+u+'" d="M 30,100 A 70,70 0 0,1 170,100" fill="none"/>';
-  s+='<text font-size="10" font-family="'+ser+'" font-weight="700" letter-spacing="4" fill="'+t+'" opacity="0.6"><textPath xlink:href="#ta_'+u+'" startOffset="11%">МОНЕТКА</textPath></text>';
-  s+='<path id="ba_'+u+'" d="M 36,104 A 64,64 0 0,0 164,104" fill="none"/>';
-  s+='<text font-size="9" font-family="'+ser+'" font-weight="600" letter-spacing="3" fill="'+t+'" opacity="0.5"><textPath xlink:href="#ba_'+u+'" startOffset="'+(side==='eagle'?'30%':'27%')+'">'+(side==='eagle'?'ОРЁЛ':'РЕШКА')+'</textPath></text>';
-  // small dots flanking bottom text
-  s+='<g fill="'+t+'" opacity="0.4"><circle cx="64" cy="150" r="1.6"/><circle cx="136" cy="150" r="1.6"/></g>';
-  // central relief (incuse emboss: shadow + main + highlight)
+
+  // ---- body / rim band ----
+  s+='<circle cx="100" cy="100" r="99.5" fill="'+c[4]+'"/>';
+  s+='<circle cx="100" cy="100" r="98" fill="url(#rm_'+u+')"/>';
+  // reeded (milled) edge — fine grooves around the band
+  s+='<g stroke="'+c[4]+'" stroke-width="1.05" opacity="0.5">';
+  for(var k=0;k<72;k++){var aa=k*5*Math.PI/180,co=Math.cos(aa),si=Math.sin(aa);s+='<line x1="'+(100+co*92.5).toFixed(1)+'" y1="'+(100+si*92.5).toFixed(1)+'" x2="'+(100+co*97.5).toFixed(1)+'" y2="'+(100+si*97.5).toFixed(1)+'"/>';}
+  s+='</g>';
+  // milled highlight on the top-left arc
+  s+='<g stroke="'+hl+'" stroke-width="0.7" opacity="0.5">';
+  for(var k2=0;k2<72;k2++){var ab=k2*5*Math.PI/180,cb=Math.cos(ab),sb=Math.sin(ab);if(cb+sb>-0.25)continue;s+='<line x1="'+(100+cb*93).toFixed(1)+'" y1="'+(100+sb*93).toFixed(1)+'" x2="'+(100+cb*97).toFixed(1)+'" y2="'+(100+sb*97).toFixed(1)+'"/>';}
+  s+='</g>';
+
+  // ---- domed field ----
+  s+='<circle cx="100" cy="100" r="91" fill="'+c[3]+'"/>';
+  s+='<circle cx="100" cy="100" r="89.5" fill="url(#f_'+u+')"/>';
+  s+='<circle cx="100" cy="100" r="89.5" fill="url(#vg_'+u+')"/>';
+  s+='<circle cx="100" cy="100" r="89.5" fill="url(#sp_'+u+')"/>';
+
+  // ---- beveled inner step + recessed pan ----
+  s+='<circle cx="100" cy="100" r="76" fill="none" stroke="'+t+'" stroke-width="2" opacity="0.4"/>';
+  s+='<circle cx="100" cy="100" r="77.4" fill="none" stroke="'+hl+'" stroke-width="1" opacity="0.55"/>';
+  s+='<circle cx="100" cy="100" r="74" fill="url(#in_'+u+')"/>';
+  // beaded guilloché ring
+  s+='<circle cx="100" cy="100" r="70" fill="none" stroke="'+t+'" stroke-width="2.4" stroke-dasharray="0.2 4.2" stroke-linecap="round" opacity="0.42"/>';
+
+  // ---- arc legends (top brand, bottom side) ----
+  s+='<path id="ta_'+u+'" d="M 32,100 A 68,68 0 0,1 168,100" fill="none"/>';
+  s+='<g transform="translate(0.8,1)" opacity="0.5"><text font-size="11" font-family="'+ser+'" font-weight="700" letter-spacing="3.4" fill="'+t+'"><textPath xlink:href="#ta_'+u+'" startOffset="11%">МОНЕТКА</textPath></text></g>';
+  s+='<text font-size="11" font-family="'+ser+'" font-weight="700" letter-spacing="3.4" fill="'+c[2]+'" opacity="0.9"><textPath xlink:href="#ta_'+u+'" startOffset="11%">МОНЕТКА</textPath></text>';
+  s+='<path id="ba_'+u+'" d="M 38,104 A 62,62 0 0,0 162,104" fill="none"/>';
+  var lbl=side==='eagle'?'ОРЁЛ':'РЕШКА',lof=side==='eagle'?'30%':'27%';
+  s+='<text font-size="9.5" font-family="'+ser+'" font-weight="600" letter-spacing="2.6" fill="'+t+'" opacity="0.55"><textPath xlink:href="#ba_'+u+'" startOffset="'+lof+'">'+lbl+'</textPath></text>';
+  // flanking pellets
+  s+='<g fill="'+t+'" opacity="0.42"><circle cx="58" cy="150" r="1.7"/><circle cx="142" cy="150" r="1.7"/></g>';
+
+  // ---- central emblem ----
   if(side==='eagle'){
-    // Monogram М
-    s+='<g font-family="'+ser+'" font-weight="700" text-anchor="middle">';
-    s+='<text x="101.2" y="119.5" font-size="78" fill="'+t+'" opacity="0.55">М</text>';
-    s+='<text x="99" y="117.5" font-size="78" fill="'+hl+'" opacity="0.4">М</text>';
-    s+='<text x="100" y="118.5" font-size="78" fill="'+c[2]+'" opacity="0.85">М</text>';
+    // faint radiant fan behind the monogram
+    s+='<g transform="translate(100,98)" stroke="'+t+'" stroke-width="1.1" opacity="0.13" stroke-linecap="round">';
+    for(var r=0;r<24;r++){var ar=r*15*Math.PI/180;s+='<line x1="'+(Math.cos(ar)*9).toFixed(1)+'" y1="'+(Math.sin(ar)*9).toFixed(1)+'" x2="'+(Math.cos(ar)*40).toFixed(1)+'" y2="'+(Math.sin(ar)*40).toFixed(1)+'"/>';}
     s+='</g>';
-    // small star above monogram
-    s+='<g transform="translate(100,58)" fill="'+t+'" opacity="0.45"><path d="M0,-7 L1.7,-2.2 L6.6,-2.2 L2.6,1 L4.2,5.8 L0,2.8 L-4.2,5.8 L-2.6,1 L-6.6,-2.2 L-1.7,-2.2 Z"/></g>';
+    // crowning star
+    s+=rg('<g transform="translate(100,59)"><path d="M0,-8 L2,-2.5 L7.6,-2.5 L3,1.2 L4.8,6.6 L0,3.2 L-4.8,6.6 L-3,1.2 L-7.6,-2.5 L-2,-2.5 Z"/></g>');
+    // monogram М
+    s+=rg('<text x="100" y="124" font-size="76" font-family="'+ser+'" font-weight="700" text-anchor="middle">М</text>');
   } else {
-    // Sunburst emblem + center
-    s+='<g transform="translate(100,100)">';
-    s+='<g stroke="'+t+'" stroke-width="2.4" opacity="0.42" stroke-linecap="round">';
-    for(var a=0;a<12;a++){var ang=a*30*Math.PI/180;var r1=20,r2=40;s+='<line x1="'+(Math.cos(ang)*r1).toFixed(1)+'" y1="'+(Math.sin(ang)*r1).toFixed(1)+'" x2="'+(Math.cos(ang)*r2).toFixed(1)+'" y2="'+(Math.sin(ang)*r2).toFixed(1)+'"/>';}
-    s+='</g>';
-    s+='<circle r="16" fill="none" stroke="'+t+'" stroke-width="1.6" opacity="0.4"/>';
-    s+='<circle r="14" fill="'+c[2]+'" opacity="0.5"/>';
-    s+='<text text-anchor="middle" dy="7.5" font-family="'+ser+'" font-weight="700" font-size="20" fill="'+t+'" opacity="0.7">Р</text>';
+    // struck sunburst of alternating rays
+    var burst='<g transform="translate(100,99)">';
+    for(var b=0;b<16;b++){var ang=b*22.5*Math.PI/180,bx=Math.cos(ang),by=Math.sin(ang),px=-by,py=bx,w=(b%2)?2.6:1.5,len=(b%2)?44:36;
+      burst+='<path d="M'+(bx*15+px*w).toFixed(1)+','+(by*15+py*w).toFixed(1)+' L'+(bx*len).toFixed(1)+','+(by*len).toFixed(1)+' L'+(bx*15-px*w).toFixed(1)+','+(by*15-py*w).toFixed(1)+' Z"/>';}
+    burst+='<circle r="15.5"/></g>';
+    s+=rg(burst);
+    // incuse denomination Р on the raised boss
+    s+='<g transform="translate(100,99)" text-anchor="middle" font-family="'+ser+'" font-weight="700">';
+    s+='<text dy="7.4" font-size="22" fill="'+t+'" opacity="0.62">Р</text>';
+    s+='<text dy="6.6" font-size="22" fill="'+hl+'" opacity="0.32">Р</text>';
     s+='</g>';
   }
   s+='</svg>';
@@ -896,6 +934,8 @@ function _applyResult(won,result,sv,mult,gain,newBal,serverSeed,prevBal){
     save();checkAchievements();
     var broke=state.bal<=0;
     try{updateUI(prevBal);}catch(e){}
+    // ставка не должна превышать текущий баланс — иначе следующий бросок зря ругается «Не хватает»
+    try{var _st=document.getElementById('stake');if(_st){var _sv=parseInt(_st.value,10)||0;if(_sv>state.bal)_st.value=state.bal>0?String(Math.round(state.bal)):'';}}catch(e){}
     var btn=document.getElementById('flip-btn');
     setTimeout(function(){
       try{if(coin)coin.classList.remove('flipping');}catch(e){}
@@ -1035,7 +1075,7 @@ function _lbRenderRows(rows,myId){
       '<div class="lb-avatar" style="background:'+LB_COLS[i%LB_COLS.length]+'">'+av+'</div>'+
       '<div class="lb-info"><div class="lb-name">'+name+'</div>'+
       '<div class="lb-rounds">'+(e.rounds||0)+' бросков</div></div>'+
-      '<div class="lb-bal-val">'+fmtS(e.balance)+'</div></div>';
+      '<div class="lb-bal-val">'+fmtS(e.balance||0)+'</div></div>';
   }).join('');
 }
 function _lbMyBlock(rank,name,rounds,bal){
@@ -1185,7 +1225,13 @@ function __init(){
     };
     setTimeout(runLoader,450);
     var stakeEl=document.getElementById('stake');
-    if(stakeEl)stakeEl.addEventListener('keydown',function(e){if(e.key==='Enter')flip();});
+    if(stakeEl){
+      stakeEl.addEventListener('keydown',function(e){if(e.key==='Enter')flip();});
+      // только цифры — отсекаем e/-/. и научную запись, которые проскакивают на части Android-клавиатур
+      stakeEl.addEventListener('input',function(){var v=this.value.replace(/[^\d]/g,'');if(v.length>9)v=v.slice(0,9);if(v!==this.value)this.value=v;});
+    }
+    // если приложение долго открыто, кнопка бонуса появится сама по истечении кулдауна
+    setInterval(renderBonus,60000);
     var bcb=document.getElementById('buy-confirm-btn');
     if(bcb)bcb.onclick=function(){
       if(!pendingBuy)return;var pb=pendingBuy;
