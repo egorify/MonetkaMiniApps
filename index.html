@@ -327,200 +327,15 @@ body.bg-palace .bg-glow{background:radial-gradient(120% 60% at 50% -8%,rgba(246,
 .toast .t-sub{font-family:var(--fm);font-size:13px;font-weight:600;color:var(--gold);}
 
 </style>
-
-<style id="redesign">
-/* ============================ REDESIGN LAYER ============================ */
-:root{
-  --r-lg:22px;--r-md:16px;--r-sm:12px;
-  --glass:rgba(255,255,255,0.045);
-  --glass-2:rgba(255,255,255,0.07);
-  --hair:rgba(255,255,255,0.08);
-  --hair-2:rgba(255,255,255,0.13);
-}
-body{font-weight:500;letter-spacing:0.1px;}
-
-/* depth vignette over the whole app */
-.bg-vignette{position:fixed;inset:0;z-index:0;pointer-events:none;
-  background:radial-gradient(120% 90% at 50% 42%,transparent 56%,rgba(0,0,0,0.45) 100%);}
-
-/* hide legacy dots if present */
-.nav{display:none!important;}
-
-/* ============ TOP TAB BAR ============ */
-.topbar{position:fixed;top:0;left:0;right:0;z-index:30;
-  display:flex;align-items:center;justify-content:center;
-  padding:calc(env(safe-area-inset-top,0px) + 11px) 16px 11px;pointer-events:none;}
-.tabs{pointer-events:auto;display:inline-flex;gap:3px;padding:4px;border-radius:15px;
-  background:rgba(16,18,22,0.66);border:1px solid var(--hair);
-  -webkit-backdrop-filter:blur(16px) saturate(1.2);backdrop-filter:blur(16px) saturate(1.2);
-  box-shadow:0 8px 26px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.05);}
-.tab{pointer-events:auto;border:none;background:none;color:var(--tx-3);
-  font-family:var(--fs);font-size:12.5px;font-weight:700;letter-spacing:0.1px;
-  padding:7px 11px;border-radius:11px;cursor:pointer;
-  transition:color .25s ease,background .3s cubic-bezier(.32,.72,0,1),box-shadow .3s ease;}
-.tab.active{color:#1c1810;background:linear-gradient(180deg,#E7CE93,#C49A4A);
-  box-shadow:0 4px 12px rgba(216,182,117,0.28),inset 0 1px 0 rgba(255,255,255,0.4);}
-.tab:not(.active):active{color:var(--tx);}
-
-.sound-btn{position:fixed;top:calc(env(safe-area-inset-top,0px) + 56px);right:14px;z-index:31;
-  width:32px;height:32px;border-radius:50%;border:1px solid var(--hair);
-  background:rgba(16,18,22,0.6);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
-  color:var(--tx-2);font-size:13px;display:flex;align-items:center;justify-content:center;
-  transition:transform .14s ease,color .2s ease;}
-.sound-btn:active{transform:scale(.9);}
-
-/* ============ TYPE ============ */
-.panel-title{font-size:27px;font-weight:800;letter-spacing:-0.6px;
-  background:linear-gradient(180deg,#FBF6EA,#CDB488);-webkit-background-clip:text;background-clip:text;
-  -webkit-text-fill-color:transparent;}
-.eyebrow{font-size:9.5px;font-weight:700;letter-spacing:2.6px;color:var(--tx-3);}
-
-/* ============ GAME HEAD ============ */
-.balance{letter-spacing:-2px;text-shadow:0 2px 24px rgba(216,182,117,0.12);}
-.rec-fill{box-shadow:0 0 10px rgba(216,182,117,0.4);}
-
-/* stats as a glass strip */
-.stats{padding:11px 6px;border:1px solid var(--hair);border-radius:var(--r-md);
-  background:linear-gradient(180deg,var(--glass),rgba(255,255,255,0.015));
-  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);margin-top:10px;}
-.stat+.stat::before{height:26px;background:var(--hair);}
-.stat-val{font-size:17px;letter-spacing:-0.4px;}
-.stat-lbl{font-size:8.5px;letter-spacing:1.2px;color:var(--tx-3);margin-top:4px;}
-
-/* daily bonus — slimmer premium banner */
-.daily{margin-top:11px;border-radius:13px;border:1px solid var(--gold-line);
-  background:linear-gradient(180deg,rgba(216,182,117,0.16),rgba(216,182,117,0.07));
-  box-shadow:0 6px 18px rgba(216,182,117,0.12);}
-
-/* ============ COIN STAGE ============ */
-.coin-halo{background:radial-gradient(circle,rgba(216,182,117,0.22) 0%,rgba(216,182,117,0.05) 44%,transparent 66%);}
-.result-flash{font-weight:600;}
-
-/* ============ CHOICE ============ */
-.choice-btn{height:66px;border-radius:18px;border:1.5px solid var(--hair-2);
-  background:linear-gradient(180deg,var(--glass),rgba(255,255,255,0.02));
-  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
-  transition:transform .18s cubic-bezier(.22,1,.36,1),border-color .2s,background .2s,box-shadow .2s;}
-.choice-btn .clabel{font-size:17px;font-weight:800;letter-spacing:0.2px;}
-.choice-btn.active{border-color:var(--gold-line);
-  background:linear-gradient(180deg,rgba(216,182,117,0.18),rgba(216,182,117,0.06));
-  box-shadow:0 6px 20px rgba(216,182,117,0.16),inset 0 0 0 1px var(--gold-line);}
-.choice-btn.active .clabel{background:linear-gradient(180deg,#F6EACF,#D8B675);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
-
-/* ============ BET ============ */
-.bet-row{border-bottom:1px solid var(--hair-2);}
-.btn-all{border-radius:11px;border:1px solid var(--gold-line);
-  background:linear-gradient(180deg,rgba(216,182,117,0.16),rgba(216,182,117,0.06));}
-.chip{border-radius:11px;border:1px solid var(--hair);background:var(--glass);
-  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);color:var(--tx-2);transition:all .15s ease;}
-.chip:active{background:var(--glass-2);color:var(--tx);transform:scale(.94);}
-
-/* ============ CTA ============ */
-.flip-btn{height:52px;border-radius:16px;font-size:15.5px;letter-spacing:0.4px;
-  box-shadow:0 10px 26px rgba(216,182,117,0.26),inset 0 1px 0 rgba(255,255,255,0.4);}
-
-/* ============ HISTORY ============ */
-.h-dot{width:8px;height:8px;box-shadow:0 0 6px currentColor;}
-.h-dot.w{background:var(--win);color:var(--win);opacity:.85;}
-.h-dot.l{background:var(--lose);color:var(--lose);opacity:.65;}
-
-/* ============ SHOP ============ */
-.shop-head{padding-right:0;}
-.shop-bal{font-size:17px;background:linear-gradient(180deg,#F6EACF,#D8B675);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
-.section-label span{color:var(--tx-2);}
-.grid{gap:13px;}
-.shop-item{border-radius:var(--r-lg);border:1px solid var(--hair);
-  background:linear-gradient(180deg,var(--glass),rgba(255,255,255,0.012));
-  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
-  padding:18px 14px 15px;transition:transform .18s ease,border-color .2s,box-shadow .25s;}
-.shop-item::after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
-  background:radial-gradient(120% 60% at 50% -10%,rgba(255,255,255,0.06),transparent 60%);}
-.shop-item:active{transform:scale(.965);}
-.shop-item.equipped{border-color:var(--gold-line);
-  background:linear-gradient(180deg,rgba(216,182,117,0.14),rgba(216,182,117,0.04));
-  box-shadow:0 10px 28px rgba(216,182,117,0.14),inset 0 0 0 1px var(--gold-line);}
-.item-preview{width:64px;height:64px;margin:4px 0 12px;
-  filter:drop-shadow(0 8px 16px rgba(0,0,0,0.5));}
-.item-preview::before{content:'';position:absolute;width:54px;height:12px;left:50%;bottom:-2px;
-  transform:translateX(-50%);background:radial-gradient(ellipse,rgba(0,0,0,0.5),transparent 70%);}
-.bg-preview{width:100%;height:54px;border-radius:13px;margin:6px 0 12px;border:1px solid var(--hair-2);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,0.08);}
-.item-name{font-size:13px;font-weight:700;}
-.item-price{font-size:12px;color:var(--tx-2);margin-top:5px;}
-.item-status.equipped{background:linear-gradient(180deg,#E7CE93,#C49A4A);color:#1c1810;}
-.item-badge{top:9px;right:9px;}
-
-/* ============ LEADERBOARD ============ */
-.lb-my{border-radius:var(--r-lg);padding:16px 18px;
-  background:linear-gradient(180deg,rgba(216,182,117,0.16),rgba(216,182,117,0.05));
-  border:1px solid var(--gold-line);box-shadow:0 12px 30px rgba(216,182,117,0.1);margin:18px 0 8px;}
-.lb-rank-big{background:linear-gradient(180deg,#F6EACF,#D8B675);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
-
-/* podium */
-.podium{display:flex;align-items:flex-end;justify-content:center;gap:9px;margin:22px 0 8px;}
-.pod{flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;
-  border-radius:18px 18px 14px 14px;padding:12px 6px 0;border:1px solid var(--hair);
-  background:linear-gradient(180deg,var(--glass),rgba(255,255,255,0.015));position:relative;}
-.pod-medal{font-size:18px;line-height:1;margin-bottom:6px;}
-.pod-av{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  font-size:19px;font-weight:800;color:var(--tx);border:1px solid var(--hair-2);}
-.pod-name{font-size:12px;font-weight:700;margin-top:8px;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.pod-bal{font-family:var(--fm);font-size:12px;font-weight:600;color:var(--gold);margin-top:2px;}
-.pod-step{margin-top:10px;width:100%;font-family:var(--fm);font-weight:700;color:var(--tx-4);
-  border-top:1px solid var(--hair);padding:7px 0 9px;font-size:13px;}
-.pod.p-gold{transform:translateY(-12px);border-color:var(--gold-line);
-  background:linear-gradient(180deg,rgba(216,182,117,0.18),rgba(216,182,117,0.05));}
-.pod.p-gold .pod-av{width:54px;height:54px;font-size:22px;border-color:var(--gold-line);
-  box-shadow:0 8px 22px rgba(216,182,117,0.3);}
-.pod.p-gold .pod-medal{font-size:22px;}
-.pod.p-gold .pod-step{color:var(--gold);}
-.pod.p-silver .pod-step{color:#C7CDD6;}
-.pod.p-bronze .pod-step{color:#D0A06A;}
-.pod.me{box-shadow:inset 0 0 0 1px var(--gold-line);}
-.lb-list-rows{display:flex;flex-direction:column;margin-top:6px;}
-.lb-item{padding:14px 4px;border-bottom:1px solid var(--hair);}
-.lb-item.me{background:var(--glass);border:1px solid var(--gold-line);border-radius:13px;padding:13px 12px;}
-.lb-avatar{font-weight:800;}
-
-/* ============ TASKS ============ */
-.tasks-intro{font-size:13px;color:var(--tx-3);margin:6px 0 20px;line-height:1.5;}
-.tasks-list{display:flex;flex-direction:column;gap:11px;}
-.task{display:flex;align-items:center;gap:13px;padding:14px 15px;border-radius:var(--r-md);
-  border:1px solid var(--hair);background:linear-gradient(180deg,var(--glass),rgba(255,255,255,0.012));
-  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:opacity .3s;}
-.task-ic{flex:none;width:42px;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;
-  font-size:20px;background:var(--glass-2);border:1px solid var(--hair);}
-.task-mid{flex:1;min-width:0;}
-.task-name{font-size:13.5px;font-weight:700;color:var(--tx);}
-.task-bar{height:5px;border-radius:3px;background:var(--hair);overflow:hidden;margin:8px 0 5px;}
-.task-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--gold-2),var(--gold));
-  box-shadow:0 0 8px rgba(216,182,117,0.4);transition:width .6s cubic-bezier(.22,1,.36,1);}
-.task-sub{font-family:var(--fm);font-size:10.5px;color:var(--tx-3);}
-.task-rew{flex:none;font-family:var(--fm);font-size:13px;font-weight:700;color:var(--gold);}
-.task.done{opacity:0.62;}
-.task.done .task-ic{background:linear-gradient(180deg,#E7CE93,#C49A4A);color:#1c1810;border-color:transparent;font-weight:800;}
-.task.done .task-fill{background:var(--win);box-shadow:0 0 8px rgba(86,217,163,0.4);}
-.task.done .task-rew{color:var(--tx-3);}
-
-/* ============ SPLASH / MODAL / TOAST refinements ============ */
-.sp-title{background:linear-gradient(180deg,#FBF6EA,#CDB488);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
-.modal{border-radius:26px;border:1px solid var(--hair-2);
-  background:linear-gradient(180deg,#14161B,#0D0F13);
-  box-shadow:0 30px 80px rgba(0,0,0,0.6);}
-.modal-title{background:linear-gradient(180deg,#FBF6EA,#CDB488);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
-.toast{border-radius:16px;border:1px solid var(--gold-line);}
-</style>
-
 </head>
 <body>
 <div class="bg-glow"></div>
 <div class="bg-grain"></div>
-<div class="bg-vignette"></div>
 
 <div id="app">
   <canvas class="particle-canvas" id="pcv"></canvas>
   <div class="stars" id="stars"></div>
-  <div class="topbar"><div class="tabs" id="tabs"><button class="tab" data-p="0" onclick="goTab(0)">Магазин</button><button class="tab active" data-p="1" onclick="goTab(1)">Игра</button><button class="tab" data-p="2" onclick="goTab(2)">Задания</button><button class="tab" data-p="3" onclick="goTab(3)">Лидеры</button></div></div>
+  <div class="nav"><div class="dot" id="dot0"></div><div class="dot active" id="dot1"></div><div class="dot" id="dot2"></div><div class="dot" id="dot3"></div></div>
   <button class="sound-btn" id="sound-btn" onclick="toggleSound()">🔊</button>
 
   <div class="slider-track" id="slider">
@@ -600,8 +415,11 @@ body{font-weight:500;letter-spacing:0.1px;}
     <!-- ===== TASKS ===== -->
     <div class="panel" id="tasks-panel">
       <div class="panel-title">Задания</div>
-      <div class="tasks-intro">Выполняй цели — награды начисляются автоматически.</div>
-      <div class="tasks-list" id="tasks-list"></div>
+      <div class="tasks-coming">
+        <div class="tc-icon">🎯</div>
+        <div class="tc-title">Скоро</div>
+        <div class="tc-sub">Здесь появятся ежедневные задания с наградами. Следи за обновлениями!</div>
+      </div>
     </div>
 
     <!-- ===== LEADERBOARD ===== -->
@@ -851,14 +669,14 @@ function claimBonus(){if(!bonusReady())return;var amt=500;state.bal+=amt;if(stat
 
 // ══════════════════════════════════════ ACHIEVEMENTS
 var ACHIEVEMENTS=[
-  {id:'first_win',name:'Первая победа',icon:'🎯',reward:200,goal:1,cur:function(s){return s.wins;},cond:function(s){return s.wins>=1;}},
-  {id:'streak5',name:'Серия из 5 побед',icon:'🔥',reward:1000,goal:5,cur:function(s){return s.bestStreak;},cond:function(s){return s.bestStreak>=5;}},
-  {id:'streak10',name:'Серия из 10 побед',icon:'⚡',reward:5000,goal:10,cur:function(s){return s.bestStreak;},cond:function(s){return s.bestStreak>=10;}},
-  {id:'rounds100',name:'100 бросков',icon:'🪙',reward:2000,goal:100,cur:function(s){return s.rounds;},cond:function(s){return s.rounds>=100;}},
-  {id:'rich10k',name:'Баланс 10 000',icon:'💰',reward:2000,goal:10000,cur:function(s){return s.record;},cond:function(s){return s.record>=10000;}},
-  {id:'rich100k',name:'Баланс 100 000',icon:'💎',reward:20000,goal:100000,cur:function(s){return s.record;},cond:function(s){return s.record>=100000;}},
-  {id:'rich1m',name:'Миллионер',icon:'👑',reward:200000,goal:1000000,cur:function(s){return s.record;},cond:function(s){return s.record>=1000000;}},
-  {id:'collector',name:'Коллекционер монет',icon:'🏅',reward:8000,goal:5,cur:function(s){return s.owned_skins.length;},cond:function(s){return s.owned_skins.length>=5;}},
+  {id:'first_win',name:'Первая победа',reward:200,cond:function(s){return s.wins>=1;}},
+  {id:'streak5',name:'5 побед подряд',reward:1000,cond:function(s){return s.bestStreak>=5;}},
+  {id:'streak10',name:'10 побед подряд',reward:5000,cond:function(s){return s.bestStreak>=10;}},
+  {id:'rounds100',name:'100 бросков',reward:2000,cond:function(s){return s.rounds>=100;}},
+  {id:'rich10k',name:'Баланс 10 000',reward:2000,cond:function(s){return s.record>=10000;}},
+  {id:'rich100k',name:'Баланс 100 000',reward:20000,cond:function(s){return s.record>=100000;}},
+  {id:'rich1m',name:'Миллионер',reward:200000,cond:function(s){return s.record>=1000000;}},
+  {id:'collector',name:'Коллекционер: 5 монет',reward:8000,cond:function(s){return s.owned_skins.length>=5;}},
 ];
 function checkAchievements(){
   if(!state.achievements)state.achievements=[];
@@ -872,7 +690,7 @@ function checkAchievements(){
       (function(ac,idx){setTimeout(function(){toast('Достижение: '+ac.name,'+'+fmt(ac.reward),'🏆');sndCoin();haptic('win');},250+idx*1700);})(a,shown++);
     }
   }
-  if(unlocked){save();try{renderTasks();}catch(e){}}
+  if(unlocked){save();}
   return unlocked;
 }
 
@@ -1005,11 +823,9 @@ function snapTo(p,animate){
   updateDots();
   if(animate&&p!==prev)_haptic('light');
   if(p===0)renderShop();
-  if(p===2)renderTasks();
   if(p===3)renderLB();
 }
-function updateDots(){var ts=document.querySelectorAll('.tab');for(var i=0;i<ts.length;i++){var p=parseInt(ts[i].getAttribute('data-p'),10);ts[i].className='tab'+(p===curPanel?' active':'');}}
-function goTab(p){if(p===curPanel)return;snapTo(p,true);haptic('light');if(soundOn)sndClick();}
+function updateDots(){for(var i=0;i<4;i++){var d=document.getElementById('dot'+i);if(d)d.className='dot'+(i===curPanel?' active':'');}}
 
 // ══════════════════════════════════════ HINT
 function closeHint(){var h=document.getElementById('hint');if(!h)return;h.classList.add('hide');state.hintSeen=true;save();setTimeout(function(){h.style.display='none';},550);}
@@ -1247,41 +1063,20 @@ function shopClick(type,id){
 function closeBuyModal(){document.getElementById('buy-modal').classList.remove('open');pendingBuy=null;}
 
 // ══════════════════════════════════════ LEADERBOARD
-function _lbName(e){return e.first_name||(e.username?'@'+e.username:'Игрок');}
-function _lbAv(e){return (_lbName(e)[0]||'И').toUpperCase();}
 function _lbRenderRows(rows,myId){
-  var lbList=document.getElementById('lb-list');if(!lbList)return;
-  var html='';
-  var top=rows.slice(0,3);
-  if(top.length){
-    var order=[1,0,2];                 // silver · gold · bronze (visual order)
-    var medal=['👑','🥈','🥉'],cls=['p-gold','p-silver','p-bronze'];
-    html+='<div class="podium">';
-    for(var oi=0;oi<order.length;oi++){
-      var idx=order[oi],e=top[idx];if(!e)continue;
-      var isMe=myId&&String(e.telegram_id)===String(myId);
-      html+='<div class="pod '+cls[idx]+(isMe?' me':'')+'">'+
-        '<div class="pod-medal">'+medal[idx]+'</div>'+
-        '<div class="pod-av" style="background:'+LB_COLS[idx%LB_COLS.length]+'">'+_lbAv(e)+'</div>'+
-        '<div class="pod-name">'+_lbName(e)+'</div>'+
-        '<div class="pod-bal">'+fmtS(e.balance||0)+'</div>'+
-        '<div class="pod-step">'+(idx+1)+'</div></div>';
-    }
-    html+='</div>';
-  }
-  var rest=rows.slice(3);
-  if(rest.length){
-    html+='<div class="lb-list-rows">'+rest.map(function(e,i){
-      var isMe=myId&&String(e.telegram_id)===String(myId);
-      return'<div class="lb-item '+(isMe?'me':'')+'">'+
-        '<div class="lb-num">'+(i+4)+'</div>'+
-        '<div class="lb-avatar" style="background:'+LB_COLS[(i+3)%LB_COLS.length]+'">'+_lbAv(e)+'</div>'+
-        '<div class="lb-info"><div class="lb-name">'+_lbName(e)+'</div>'+
-        '<div class="lb-rounds">'+(e.rounds||0)+' бросков</div></div>'+
-        '<div class="lb-bal-val">'+fmtS(e.balance||0)+'</div></div>';
-    }).join('')+'</div>';
-  }
-  lbList.innerHTML=html;
+  var nums=['gold','silver','bronzec'];
+  var lbList=document.getElementById('lb-list');
+  if(lbList)lbList.innerHTML=rows.map(function(e,i){
+    var isMe=myId&&String(e.telegram_id)===String(myId);
+    var name=e.first_name||(e.username?'@'+e.username:'Игрок');
+    var av=(name[0]||'И').toUpperCase();
+    return'<div class="lb-item '+(isMe?'me':'')+'">'+
+      '<div class="lb-num '+(i<3?nums[i]:'')+'">'+(i+1)+'</div>'+
+      '<div class="lb-avatar" style="background:'+LB_COLS[i%LB_COLS.length]+'">'+av+'</div>'+
+      '<div class="lb-info"><div class="lb-name">'+name+'</div>'+
+      '<div class="lb-rounds">'+(e.rounds||0)+' бросков</div></div>'+
+      '<div class="lb-bal-val">'+fmtS(e.balance||0)+'</div></div>';
+  }).join('');
 }
 function _lbMyBlock(rank,name,rounds,bal){
   var lbMy=document.getElementById('lb-my');
@@ -1336,23 +1131,6 @@ function renderLB(){
 }
 
 // ══════════════════════════════════════ INIT
-function fmtT(n){if(n>=1e6)return(n/1e6).toFixed(n%1e6?1:0)+'M';if(n>=1e3)return Math.round(n/1e3)+'к';return ''+Math.round(n);}
-function renderTasks(){
-  var el=document.getElementById('tasks-list');if(!el)return;
-  var done=state.achievements||[];
-  el.innerHTML=ACHIEVEMENTS.map(function(a){
-    var claimed=done.indexOf(a.id)>=0;
-    var cur=Math.max(0,Math.min(a.cur(state),a.goal));
-    var pct=claimed?100:Math.round(cur/a.goal*100);
-    var sub=claimed?'Награда получена':fmtT(cur)+' / '+fmtT(a.goal);
-    return '<div class="task'+(claimed?' done':'')+'">'+
-      '<div class="task-ic">'+(claimed?'✓':a.icon)+'</div>'+
-      '<div class="task-mid"><div class="task-name">'+a.name+'</div>'+
-      '<div class="task-bar"><div class="task-fill" style="width:'+pct+'%"></div></div>'+
-      '<div class="task-sub">'+sub+'</div></div>'+
-      '<div class="task-rew">+'+fmtT(a.reward)+'</div></div>';
-  }).join('');
-}
 var __inited=false;
 function __init(){
   if(__inited)return;__inited=true;
