@@ -524,8 +524,6 @@ const BACKGROUNDS=[
 ];
 const TIER_BADGE={base:'',cheap:'базовый',medium:'средний',premium:'премиум',legendary:'легенда'};
 const TIER_CLS={base:'',cheap:'badge-cheap',medium:'badge-medium',premium:'badge-premium',legendary:'badge-legendary'};
-const LB_NAMES=['Артём_77','КириллК','МаксDragon','ПавелRich','АняPro','СашаLucky','РомаX','ДашаGold','ИванBoss','ЛераWin'];
-const LB_AVS=['А','К','М','П','А','С','Р','Д','И','Л'];
 const LB_COLS=['rgba(216,182,117,0.14)','rgba(86,217,163,0.12)','rgba(251,113,133,0.12)','rgba(143,180,251,0.12)','rgba(196,155,240,0.12)'];
 
 // ══════════════════════════════════════ SUPABASE
@@ -588,6 +586,7 @@ function pfFetchBalance(){
         if(typeof srv.balance==='number'&&srv.balance!==state.bal){
           state.bal=srv.balance;
           state.streak=srv.streak||0;
+          if(state.bal>state.record)state.record=state.bal;
           save();updateUI();
         }
       }
@@ -678,13 +677,14 @@ var ACHIEVEMENTS=[
 ];
 function checkAchievements(){
   if(!state.achievements)state.achievements=[];
-  var unlocked=false;
+  var unlocked=false,shown=0;
   for(var i=0;i<ACHIEVEMENTS.length;i++){
     var a=ACHIEVEMENTS[i];
     if(state.achievements.indexOf(a.id)<0&&a.cond(state)){
       state.achievements.push(a.id);state.bal+=a.reward;if(state.bal>state.record)state.record=state.bal;
       unlocked=true;
-      (function(ac){setTimeout(function(){toast('Достижение: '+ac.name,'+'+fmt(ac.reward),'🏆');sndCoin();haptic('win');},unlocked?300:0);})(a);
+      // разносим тосты во времени, чтобы при нескольких достижениях сразу каждое было видно
+      (function(ac,idx){setTimeout(function(){toast('Достижение: '+ac.name,'+'+fmt(ac.reward),'🏆');sndCoin();haptic('win');},250+idx*1700);})(a,shown++);
     }
   }
   if(unlocked){save();}
@@ -896,6 +896,8 @@ function _applyResult(won,result,sv,mult,gain,newBal,serverSeed,prevBal){
     save();checkAchievements();
     var broke=state.bal<=0;
     try{updateUI(prevBal);}catch(e){}
+    // ставка не должна превышать текущий баланс — иначе следующий бросок зря ругается «Не хватает»
+    try{var _st=document.getElementById('stake');if(_st){var _sv=parseInt(_st.value,10)||0;if(_sv>state.bal)_st.value=state.bal>0?String(Math.round(state.bal)):'';}}catch(e){}
     var btn=document.getElementById('flip-btn');
     setTimeout(function(){
       try{if(coin)coin.classList.remove('flipping');}catch(e){}
@@ -1035,7 +1037,7 @@ function _lbRenderRows(rows,myId){
       '<div class="lb-avatar" style="background:'+LB_COLS[i%LB_COLS.length]+'">'+av+'</div>'+
       '<div class="lb-info"><div class="lb-name">'+name+'</div>'+
       '<div class="lb-rounds">'+(e.rounds||0)+' бросков</div></div>'+
-      '<div class="lb-bal-val">'+fmtS(e.balance)+'</div></div>';
+      '<div class="lb-bal-val">'+fmtS(e.balance||0)+'</div></div>';
   }).join('');
 }
 function _lbMyBlock(rank,name,rounds,bal){
@@ -1185,7 +1187,13 @@ function __init(){
     };
     setTimeout(runLoader,450);
     var stakeEl=document.getElementById('stake');
-    if(stakeEl)stakeEl.addEventListener('keydown',function(e){if(e.key==='Enter')flip();});
+    if(stakeEl){
+      stakeEl.addEventListener('keydown',function(e){if(e.key==='Enter')flip();});
+      // только цифры — отсекаем e/-/. и научную запись, которые проскакивают на части Android-клавиатур
+      stakeEl.addEventListener('input',function(){var v=this.value.replace(/[^\d]/g,'');if(v.length>9)v=v.slice(0,9);if(v!==this.value)this.value=v;});
+    }
+    // если приложение долго открыто, кнопка бонуса появится сама по истечении кулдауна
+    setInterval(renderBonus,60000);
     var bcb=document.getElementById('buy-confirm-btn');
     if(bcb)bcb.onclick=function(){
       if(!pendingBuy)return;var pb=pendingBuy;
